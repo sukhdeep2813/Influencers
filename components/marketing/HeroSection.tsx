@@ -9,7 +9,7 @@ export const HeroSection = () => {
             className="inline-block animate-fade-up mr-2"
             style={{ animationDelay: `${i * 0.08}s` }}
           >
-            \{word}
+            {word}
           </span>
         ))}
         <span
