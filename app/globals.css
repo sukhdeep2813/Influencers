@@ -59,3 +59,22 @@ body {
 }
 
 /* Herer is end Find Your Perfect Influencers,Instantly*/
+
+/*animate-marquee */
+@theme {
+  /* 1. Define the custom animation class (creates `animate-marquee`) */
+  --animate-marquee: marquee 35s linear infinite;
+
+  /* 2. Define the keyframes for the animation */
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      /* Moves left by 100% of the container width, minus the gap-8 (2rem) space */
+      transform: translateX(calc(-100% - 2rem));
+    }
+  }
+}
+
+/*animate-marquee END Herer */
