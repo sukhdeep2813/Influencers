@@ -4,6 +4,9 @@ import { HeroSection } from "@/components/marketing/HeroSection";
 import TestimonialCard from "@/components/marketing/Testimonials";
 import { mockTestimonial } from "@/constants/data/mockTestimonials";
 import { MOCK_CREATORS } from "@/constants/data/mockCreators";
+import BentoGrid from "@/components/marketing/BentoGrid";
+import WhyChooseUs from "@/components/marketing/WhyChooseUs";
+import FAQSection from "@/components/marketing/FAQSection";
 
 export default function Home() {
   return (
@@ -26,16 +29,24 @@ export default function Home() {
         {/* Testimonials Section (Wrapped in a proper structural container) */}
         {/* Testimonials Section */}
         <section className="w-full max-w-7xl mx-auto px-4 pb-24 overflow-hidden">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              Trusted by top brands and creators
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <span className="inline-flex items-center rounded-full border border-violet-500/20 bg-violet-500/10 px-4 py-1.5 text-sm font-medium text-violet-400 backdrop-blur-md">
+              ⭐ Success Stories
+            </span>
+
+            <h2 className="mt-6 text-4xl md:text-5xl font-bold tracking-tight leading-tight text-white">
+              Trusted by
+              <span className="block bg-linear-to-r from-fuchsia-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">
+                top brands & creators
+              </span>
             </h2>
-            <p className="mt-4 text-lg text-gray-500 dark:text-gray-400">
-              See how our marketplace is changing the way sponsorships are
-              built.
+
+            <p className="mt-6 text-lg leading-8 text-gray-400">
+              Thousands of successful collaborations powered by one platform.
+              Discover why brands and creators choose us to build lasting
+              partnerships.
             </p>
           </div>
-
           {/* Marquee Wrapper - Hides the horizontal overflow */}
           <div className="flex  gap-8 group">
             {/* First Track (Original Array) */}
@@ -59,6 +70,30 @@ export default function Home() {
               ))}
             </div>
           </div>
+        </section>
+
+        <section className="relative">
+          <BentoGrid />
+        </section>
+
+        {/* Premium Divider */}
+        <div className="relative flex justify-center py-8 md:py-12">
+          <div className="h-px w-48 bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
+        </div>
+
+        {/* ===================== Why Choose Us ===================== */}
+        <section className="relative">
+          <WhyChooseUs />
+        </section>
+
+        {/* Premium Divider */}
+        <div className="relative flex justify-center py-8 md:py-12">
+          <div className="h-px w-48 bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
+        </div>
+
+        {/* ===================== FAQ ===================== */}
+        <section className="relative pb-24">
+          <FAQSection />
         </section>
       </main>
     </div>
