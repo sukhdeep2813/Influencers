@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -51,12 +51,12 @@ export default function SignupForm({
   };
 
   return (
-    <div className="w-full max-w-md mt">
+    <div className="w-full max-w-md">
       <header className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-white tracking-tight">
+        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
           Create your account
         </h2>
-        <p className="text-zinc-400 text-sm mt-2">
+        <p className="text-gray-600 text-sm mt-2">
           Join Brandly and start connecting instantly.
         </p>
       </header>
@@ -65,7 +65,7 @@ export default function SignupForm({
       <div
         role="radiogroup"
         aria-label="Select your role"
-        className="flex p-1 mb-8 bg-zinc-900 rounded-lg border border-zinc-800"
+        className="flex p-1 mb-8 bg-gray-100 rounded-lg border border-gray-200"
       >
         <button
           type="button"
@@ -75,7 +75,7 @@ export default function SignupForm({
           className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
             role === "brand"
               ? "bg-white text-black shadow-sm"
-              : "text-zinc-400 hover:text-white"
+              : "text-gray-600 hover:text-gray-800"
           }`}
         >
           I&apos;m a Brand
@@ -88,7 +88,7 @@ export default function SignupForm({
           className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
             role === "creator"
               ? "bg-white text-black shadow-sm"
-              : "text-zinc-400 hover:text-white"
+              : "text-gray-600 hover:text-gray-800"
           }`}
         >
           I&apos;m a Creator
@@ -106,7 +106,7 @@ export default function SignupForm({
         <div>
           <label
             htmlFor="name"
-            className="block text-sm font-medium text-zinc-300 mb-1"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
             {nameLabel}
           </label>
@@ -117,11 +117,11 @@ export default function SignupForm({
               type="text"
               required
               disabled={isLoading}
-              className="w-full px-4 py-2.5 pl-10 bg-zinc-900 border border-zinc-800 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-zinc-700 transition-all disabled:opacity-60"
+              className="w-full px-4 py-2.5 pl-10 bg-white border border-gray-100 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-300 transition-all disabled:opacity-60"
               placeholder={namePlaceholder}
             />
             <User
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
               size={18}
               aria-hidden="true"
             />
@@ -132,7 +132,7 @@ export default function SignupForm({
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-zinc-300 mb-1"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
             Email address
           </label>
@@ -143,11 +143,11 @@ export default function SignupForm({
               type="email"
               required
               disabled={isLoading}
-              className="w-full px-4 py-2.5 pl-10 bg-zinc-900 border border-zinc-800 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-zinc-700 transition-all disabled:opacity-60"
+              className="w-full px-4 py-2.5 pl-10 bg-white border border-gray-100 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-300 transition-all disabled:opacity-60"
               placeholder="you@example.com"
             />
             <Mail
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
               size={18}
               aria-hidden="true"
             />
@@ -158,7 +158,7 @@ export default function SignupForm({
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-medium text-zinc-300 mb-1"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
             Password
           </label>
@@ -169,11 +169,11 @@ export default function SignupForm({
               type="password"
               required
               disabled={isLoading}
-              className="w-full px-4 py-2.5 pl-10 bg-zinc-900 border border-zinc-800 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-zinc-700 transition-all disabled:opacity-60"
+              className="w-full px-4 py-2.5 pl-10 bg-white border border-gray-100 rounded-lg text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-100 focus:border-violet-300 transition-all disabled:opacity-60"
               placeholder="••••••••"
             />
             <Lock
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
               size={18}
               aria-hidden="true"
             />
@@ -183,16 +183,16 @@ export default function SignupForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 mt-6 bg-white text-black font-semibold rounded-lg hover:bg-zinc-200 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 mt-6 bg-gradient-to-r from-fuchsia-600 to-violet-600 text-white font-semibold rounded-lg hover:opacity-95 transition-colors disabled:opacity-70 disabled:cursor-not-allowed shadow-md"
         >
           {isLoading ? "Creating account..." : "Create account"}
           {!isLoading && <ArrowRight size={16} />}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-zinc-400">
+      <p className="mt-6 text-center text-sm text-gray-600">
         Already have an account?{" "}
-        <Link href="/login" className="text-white hover:underline font-medium">
+        <Link href="/login" className="text-violet-600 hover:underline font-medium">
           Log in
         </Link>
       </p>
