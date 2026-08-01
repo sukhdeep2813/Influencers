@@ -12,17 +12,18 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #000000;
-    --foreground: #ededed;
-  }
-}
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Card shadow used across components for a premium, soft elevation */
+:root {
+  --card-shadow: 0 10px 30px rgba(16,24,40,0.08);
 }
 
 @keyframes fadeUp {
@@ -47,12 +48,13 @@ body {
 }
 
 .animate-fade-up {
-  animation: fadeUp 0.6s ease-out both;
+  animation: fadeUp 0.6s cubic-bezier(.16,.84,.24,1) both;
 }
 
-.animate-delay-150 {
-  animation-delay: 0.15s;
-}
+.animate-delay-0 { animation-delay: 0ms; }
+.animate-delay-80 { animation-delay: 80ms; }
+.animate-delay-160 { animation-delay: 160ms; }
+.animate-delay-240 { animation-delay: 240ms; }
 
 .animate-shimmer {
   animation: shimmer 3s linear infinite;
