@@ -1,8 +1,8 @@
 export const HeroSection = () => {
   const words = ["Find", "your", "perfect", "influencers,"];
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 text-center">
-      <p className="text-3xl md:text-5xl font-sans leading-snug text-zinc-100">
+    <div className="flex flex-1 flex-col items-center justify-center px-6 py-20 text-center">
+      <p className="text-3xl md:text-5xl font-sans leading-snug text-gray-900">
         {words.map((word, i) => (
           <span
             key={i}
