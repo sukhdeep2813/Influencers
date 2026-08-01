@@ -7,10 +7,11 @@ import { MOCK_CREATORS } from "@/constants/data/mockCreators";
 import BentoGrid from "@/components/marketing/BentoGrid";
 import WhyChooseUs from "@/components/marketing/WhyChooseUs";
 import FAQSection from "@/components/marketing/FAQSection";
+import SectionReveal from "@/components/ui/SectionReveal";
 
 export default function Home() {
   return (
-    <div className="flex flex-col w-full relative">
+    <div className="flex flex-col w-full relative overflow-x-hidden">
       <BackgroundGlows />
 
       {/* Changed pt-26 to pt-24 (standard Tailwind spacing) to ensure it renders */}
@@ -18,30 +19,32 @@ export default function Home() {
         <HeroSection />
 
         {/* Creators Section */}
-        <section className="w-full max-w-7xl mx-auto px-4 py-20">
+        <SectionReveal className="w-full max-w-7xl mx-auto px-4 py-20">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {MOCK_CREATORS.map((creator) => (
-              <CreatorCard key={creator.id} {...creator} />
+            {MOCK_CREATORS.map((creator, idx) => (
+              <div key={creator.id} style={{ animationDelay: `${idx * 80}ms` }} className="animate-fade-up">
+                <CreatorCard {...creator} />
+              </div>
             ))}
           </div>
-        </section>
+        </SectionReveal>
 
         {/* Testimonials Section (Wrapped in a proper structural container) */}
         {/* Testimonials Section */}
-        <section className="w-full max-w-7xl mx-auto px-4 pb-24 overflow-hidden">
+        <SectionReveal className="w-full max-w-7xl mx-auto px-4 pb-24 overflow-hidden">
           <div className="text-center max-w-3xl mx-auto mb-20">
-            <span className="inline-flex items-center rounded-full border border-violet-500/20 bg-violet-500/10 px-4 py-1.5 text-sm font-medium text-violet-400 backdrop-blur-md">
+            <span className="inline-flex items-center rounded-full border border-violet-100 bg-violet-50 px-4 py-1.5 text-sm font-medium text-violet-600">
               ⭐ Success Stories
             </span>
 
-            <h2 className="mt-6 text-4xl md:text-5xl font-bold tracking-tight leading-tight text-white">
+            <h2 className="mt-6 text-4xl md:text-5xl font-bold tracking-tight leading-tight text-gray-900">
               Trusted by
               <span className="block bg-linear-to-r from-fuchsia-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">
                 top brands & creators
               </span>
             </h2>
 
-            <p className="mt-6 text-lg leading-8 text-gray-400">
+            <p className="mt-6 text-lg leading-8 text-gray-600">
               Thousands of successful collaborations powered by one platform.
               Discover why brands and creators choose us to build lasting
               partnerships.
@@ -70,31 +73,21 @@ export default function Home() {
               ))}
             </div>
           </div>
-        </section>
+        </SectionReveal>
 
-        <section className="relative">
+        <SectionReveal className="relative">
           <BentoGrid />
-        </section>
-
-        {/* Premium Divider */}
-        <div className="relative flex justify-center py-8 md:py-12">
-          <div className="h-px w-48 bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
-        </div>
+        </SectionReveal>
 
         {/* ===================== Why Choose Us ===================== */}
-        <section className="relative">
+        <SectionReveal className="relative">
           <WhyChooseUs />
-        </section>
-
-        {/* Premium Divider */}
-        <div className="relative flex justify-center py-8 md:py-12">
-          <div className="h-px w-48 bg-gradient-to-r from-transparent via-violet-500/40 to-transparent" />
-        </div>
+        </SectionReveal>
 
         {/* ===================== FAQ ===================== */}
-        <section className="relative pb-24">
+        <SectionReveal className="relative pb-24">
           <FAQSection />
-        </section>
+        </SectionReveal>
       </main>
     </div>
   );
