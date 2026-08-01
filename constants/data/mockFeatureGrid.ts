@@ -7,7 +7,7 @@ export const platformFeatures = [
     icon: "◎",
     // Spans 2 columns, getting a subtle indigo gradient highlight
     className:
-      "md:col-span-2 bg-gradient-to-br from-indigo-50/50 to-white dark:from-indigo-950/20 dark:to-gray-800/50",
+      "md:col-span-2 bg-gradient-to-br from-indigo-50/50 to-white",
   },
   {
     id: 2,
@@ -15,7 +15,7 @@ export const platformFeatures = [
     description:
       "Every 'verified' badge is manually checked — no fake follower farms in your shortlist.",
     icon: "✓",
-    className: "md:col-span-1 bg-white dark:bg-gray-800/50",
+    className: "md:col-span-1 bg-white",
   },
   {
     id: 3,
@@ -23,7 +23,7 @@ export const platformFeatures = [
     description:
       "Talk to creators directly. No agency layer, no delayed replies.",
     icon: "✉",
-    className: "md:col-span-1 bg-white dark:bg-gray-800/50",
+    className: "md:col-span-1 bg-white",
   },
   {
     id: 4,
@@ -33,7 +33,7 @@ export const platformFeatures = [
     icon: "◫",
     // Spans 2 columns, getting a subtle blue gradient highlight
     className:
-      "md:col-span-2 bg-gradient-to-br from-blue-50/50 to-white dark:from-blue-950/20 dark:to-gray-800/50",
+      "md:col-span-2 bg-gradient-to-br from-blue-50/50 to-white",
   },
   {
     id: 5,
@@ -42,7 +42,7 @@ export const platformFeatures = [
       "E-signed agreements protect both sides — no more back-and-forth PDFs.",
     icon: "✎",
     // Spans 2 columns, switching the layout pattern
-    className: "md:col-span-2 bg-white dark:bg-gray-800/50",
+    className: "md:col-span-2 bg-white",
   },
   {
     id: 6,
@@ -52,6 +52,6 @@ export const platformFeatures = [
     icon: "₹",
     // Spans 1 column, getting a subtle emerald gradient highlight for payments
     className:
-      "md:col-span-1 bg-gradient-to-br from-emerald-50/50 to-white dark:from-emerald-950/20 dark:to-gray-800/50",
+      "md:col-span-1 bg-gradient-to-br from-emerald-50/50 to-white",
   },
 ];
