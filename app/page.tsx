@@ -22,7 +22,11 @@ export default function Home() {
         <SectionReveal className="w-full max-w-7xl mx-auto px-4 py-20">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {MOCK_CREATORS.map((creator, idx) => (
-              <div key={creator.id} style={{ animationDelay: `${idx * 80}ms` }} className="animate-fade-up">
+              <div
+                key={creator.id}
+                style={{ animationDelay: `${idx * 80}ms` }}
+                className="animate-fade-up"
+              >
                 <CreatorCard {...creator} />
               </div>
             ))}
