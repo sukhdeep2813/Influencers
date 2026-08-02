@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Mail, Lock, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, Mail, Lock, User, Loader2 } from "lucide-react";
+import { signUp } from "@/lib/auth-client";
 
 type Role = "brand" | "creator";
 
@@ -17,6 +19,8 @@ export default function SignupForm({
   companyNameHint,
   creatorNameHint,
 }: SignupFormProps) {
+  const router = useRouter();
+
   const [role, setRole] = useState<Role>(defaultRole);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,21 +36,33 @@ export default function SignupForm({
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    const payload = {
-      role,
-      name: formData.get("name") as string,
-      email: formData.get("email") as string,
-      password: formData.get("password") as string,
-    };
+    const name = formData.get("name") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
-    try {
-      // TODO: Call your server action / API here
-      // const result = await signupAction(payload);
-      console.log("Signing up as:", payload);
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
+    const { data, error: authError } = await signUp.email({
+      email,
+      password,
+      name,
+    });
+
+    console.log("Signup response:", { data, authError });
+
+    if (authError) {
+      setError(authError.message || "Something went wrong. Please try again.");
       setIsLoading(false);
+      return;
+    }
+
+    // TODO: If you want Better Auth to natively save the custom 'role' field to your DB
+    // during this step, you will need to map it using the `additionalFields` config in lib/auth.ts.
+    // Alternatively, make a quick fetch call here to update the user record with their role.
+
+    // Route to the appropriate dashboard based on their selection
+    if (role === "brand") {
+      router.push("/brand");
+    } else {
+      router.push("/creator");
     }
   };
 
@@ -136,7 +152,7 @@ export default function SignupForm({
 
           <form onSubmit={handleSubmit} className="space-y-5" noValidate>
             {error && (
-              <div className="text-sm text-red-400 bg-red-950/40 border border-red-900 rounded-lg px-3 py-2">
+              <div className="text-sm text-red-500 bg-red-50 border border-red-100 rounded-lg px-4 py-3">
                 {error}
               </div>
             )}
@@ -224,8 +240,16 @@ export default function SignupForm({
               disabled={isLoading}
               className="w-full flex items-center justify-center gap-2 py-2.5 px-4 mt-6 bg-gradient-to-r from-fuchsia-600 to-violet-600 text-white font-semibold rounded-lg hover:opacity-95 transition-colors disabled:opacity-70 disabled:cursor-not-allowed shadow-md"
             >
-              {isLoading ? "Creating account..." : "Create account"}
-              {!isLoading && <ArrowRight size={16} />}
+              {isLoading ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  Creating account...
+                </>
+              ) : (
+                <>
+                  Create account <ArrowRight size={16} />
+                </>
+              )}
             </button>
           </form>
 
