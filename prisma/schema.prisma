@@ -16,42 +16,64 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+
 }
 
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  role      Role     @default(BRAND)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  brandProfile   BrandProfile?
-  creatorProfile CreatorProfile?
-}
-
+// ------------------------------------------------------
+// 1. YOUR CUSTOM ENUMS
+// ------------------------------------------------------
 enum Role {
   BRAND
   CREATOR
 }
 
+// ------------------------------------------------------
+// 2. CORE USER MODEL (Updated for Better Auth)
+// ------------------------------------------------------
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  role          Role      @default(BRAND)
+  
+  // --- New fields required by Better Auth ---
+  name          String
+  emailVerified Boolean   @default(false)
+  image         String?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // --- Your Custom Relations ---
+  brandProfile   BrandProfile?
+  creatorProfile CreatorProfile?
+
+  // --- Better Auth Relations ---
+  Session       Session[]
+  Account       Account[]
+}
+
+// ------------------------------------------------------
+// 3. YOUR PROFILES
+// ------------------------------------------------------
 model CreatorProfile {
-  id     String @id @default(uuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
 
   name      String
-  handle    String  @unique
+  handle    String   @unique
   bio       String?
   niche     String
   followers Int
   avgViews  Int
   country   String?
   city      String?
-  verified  Boolean @default(false)
+  verified  Boolean  @default(false)
   avatarUrl String?
 
   createdAt DateTime @default(now())
@@ -59,16 +81,59 @@ model CreatorProfile {
 }
 
 model BrandProfile {
-  id     String @id @default(uuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
 
   companyName String
   industry    String
   website     String?
   logoUrl     String?
-  verified    Boolean @default(false)
+  verified    Boolean  @default(false)
 
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ------------------------------------------------------
+// 4. BETTER AUTH REQUIRED MODELS
+// ------------------------------------------------------
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
