@@ -1,4 +1,4 @@
-import Image from "next/image";
+// import Image from "next/image";
 import Link from "next/link";
 import { FaXTwitter, FaInstagram, FaLinkedin } from "react-icons/fa6";
 
@@ -30,13 +30,13 @@ const Footer = () => {
         {/* Brand section - spans 2 columns on desktop for better proportions */}
         <div className="col-span-2">
           <Link href="/" className="flex items-center gap-2 mb-3 w-fit">
-            <Image
-              src="/logo.png"
+            {/* <Image
+              src="/logo.svg"
               alt="Brandly logo"
               width={28}
               height={28}
               style={{ objectFit: "contain" }}
-            />
+            /> */}
             <span className="font-semibold text-base tracking-tight text-white">
               Brandly
             </span>

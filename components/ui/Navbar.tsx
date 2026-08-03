@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+// import Image from "next/image";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
@@ -20,13 +20,13 @@ export default function Navbar() {
       <nav className="mx-auto max-w-7xl rounded-3xl border border-gray-100 bg-white/80 backdrop-blur-sm shadow-[var(--card-shadow)]">
         <div className="grid grid-cols-[1fr_auto_1fr] items-center px-6 py-4">
           {/* Logo */}
-          <Link
+          {/* <Link
             href="/"
             className="flex items-center gap-2"
             onClick={() => setOpen(false)}
           >
-            <Image src="/logo.svg" alt="Logo" width={36} height={36} priority />
-          </Link>
+            <Image src="/logo.svg" alt="Logo" width={28} height={28} priority />
+          </Link> */}
 
           {/* Desktop Links */}
           <ul className="hidden md:flex items-center gap-8 justify-self-center">
@@ -54,7 +54,7 @@ export default function Navbar() {
 
           {/* Mobile Toggle */}
           <button
-                      className="justify-self-end md:hidden rounded-lg p-2 transition hover:bg-gray-100"
+            className="justify-self-end md:hidden rounded-lg p-2 transition hover:bg-gray-100"
             onClick={() => setOpen(!open)}
             aria-label="Toggle Menu"
           >
@@ -64,7 +64,7 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         {open && (
-                  <div className="border-t border-gray-100 bg-white/90 backdrop-blur-sm md:hidden">
+          <div className="border-t border-gray-100 bg-white/90 backdrop-blur-sm md:hidden">
             <div className="flex flex-col gap-1 p-5">
               {navLinks.map((link) => (
                 <Link
