@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Mail, Lock, User, Loader2 } from "lucide-react";
 import { signUp } from "@/lib/auth-client";
+import { toast } from "sonner";
 
-type Role = "brand" | "creator";
+type Role = "BRAND" | "CREATOR";
 
 type SignupFormProps = {
   defaultRole: Role;
@@ -25,8 +26,8 @@ export default function SignupForm({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const nameLabel = role === "brand" ? "Company name" : "Full name";
-  const namePlaceholder = role === "brand" ? companyNameHint : creatorNameHint;
+  const nameLabel = role === "BRAND" ? "Company name" : "Full name";
+  const namePlaceholder = role === "BRAND" ? companyNameHint : creatorNameHint;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,29 +41,49 @@ export default function SignupForm({
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
 
+    // Manual Validation
+    if (!name || !email || !password) {
+      const errMsg = "All fields are required.";
+      setError(errMsg);
+      toast.error(errMsg);
+      setIsLoading(false);
+      return;
+    }
+
+    if (!email.includes("@")) {
+      const errMsg = "Please enter a valid email address.";
+      setError(errMsg);
+      toast.error(errMsg);
+      setIsLoading(false);
+      return;
+    }
+    if (password.length < 8) {
+      const errMsg = "Password must be at least 8 characters long.";
+      setError(errMsg);
+      toast.error(errMsg);
+      setIsLoading(false);
+      return;
+    }
+
     const { data, error: authError } = await signUp.email({
       email,
       password,
       name,
+      // role,
     });
-
-    console.log("Signup response:", { data, authError });
-
+    console.log("this is data: ", data);
     if (authError) {
       setError(authError.message || "Something went wrong. Please try again.");
       setIsLoading(false);
       return;
     }
 
-    // TODO: If you want Better Auth to natively save the custom 'role' field to your DB
-    // during this step, you will need to map it using the `additionalFields` config in lib/auth.ts.
-    // Alternatively, make a quick fetch call here to update the user record with their role.
-
+    toast.success("Account created successfully!");
     // Route to the appropriate dashboard based on their selection
-    if (role === "brand") {
-      router.push("/brand");
+    if (role === "BRAND") {
+      router.push("/dashboard/brand");
     } else {
-      router.push("/creator");
+      router.push("/dashboard/creator");
     }
   };
 
@@ -125,10 +146,10 @@ export default function SignupForm({
             <button
               type="button"
               role="radio"
-              aria-checked={role === "brand"}
-              onClick={() => setRole("brand")}
+              aria-checked={role === "BRAND"}
+              onClick={() => setRole("BRAND")}
               className={`flex-1 py-3 text-sm font-medium rounded-3xl transition-all ${
-                role === "brand"
+                role === "BRAND"
                   ? "bg-white text-slate-900 shadow-sm"
                   : "text-slate-500 hover:text-slate-900"
               }`}
@@ -138,10 +159,10 @@ export default function SignupForm({
             <button
               type="button"
               role="radio"
-              aria-checked={role === "creator"}
-              onClick={() => setRole("creator")}
+              aria-checked={role === "CREATOR"}
+              onClick={() => setRole("CREATOR")}
               className={`flex-1 py-3 text-sm font-medium rounded-3xl transition-all ${
-                role === "creator"
+                role === "CREATOR"
                   ? "bg-white text-slate-900 shadow-sm"
                   : "text-slate-500 hover:text-slate-900"
               }`}
