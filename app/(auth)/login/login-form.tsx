@@ -37,13 +37,13 @@ export default function LoginForm() {
 
     // Redirect to the appropriate dashboard on success
     // You can refine this later to redirect based on the user's role
-    router.push("/dashboard/brand");
+    router.push("/brand/dashboard");
   };
 
   const handleSocialLogin = async (provider: "google" | "apple") => {
     await signIn.social({
       provider,
-      callbackURL: "/dashboard/brand",
+      callbackURL: "/brand/dashboard",
     });
   };
 
@@ -152,6 +152,7 @@ export default function LoginForm() {
             {errorMessage && (
               <div className="text-sm text-red-500 bg-red-50 p-2 rounded-md border border-red-100">
                 {errorMessage}
+                
               </div>
             )}
 
