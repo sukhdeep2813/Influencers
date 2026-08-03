@@ -2,6 +2,7 @@ import React from "react";
 
 // 1. Extend the baseline type definition
 import { Testimonial } from "@/constants/data/mockTestimonials";
+import Image from "next/image";
 
 interface TestimonialCardProps extends Testimonial {
   className?: string; // Allows injecting custom container utilities if needed
@@ -20,8 +21,8 @@ export default function TestimonialCard({
   const isBrand = type === "Brand";
   const themeColor = isBrand ? "bg-blue-500" : "bg-indigo-500";
   const badgeStyle = isBrand
-      ? "bg-blue-50 text-blue-600"
-      : "bg-indigo-50 text-indigo-600";
+    ? "bg-blue-50 text-blue-600"
+    : "bg-indigo-50 text-indigo-600";
   const checkColor = isBrand ? "text-blue-500" : "text-indigo-500";
 
   return (
@@ -38,7 +39,7 @@ export default function TestimonialCard({
 
       {/* Avatar Frame */}
       <div className="w-20 h-20 rounded-full overflow-hidden mb-4 bg-white shadow-sm ring-1 ring-gray-50">
-        <img src={avatar} alt={name} className="w-full h-full object-cover" />
+        <Image src={avatar} alt={name} className="w-full h-full object-cover" />
       </div>
 
       {/* Profile Info */}
