@@ -1,4 +1,5 @@
 import { Creator } from "@/constants/data/mockCreators";
+import Image from "next/image";
 
 interface CreatorCardProps extends Creator {
   imageUrl?: string;
@@ -28,7 +29,7 @@ export default function CreatorCard({
       {/* Avatar with gradient ring */}
       <div className="mb-4 rounded-full p-[2px] bg-gradient-to-tr from-fuchsia-400 via-violet-400 to-cyan-400">
         <div className="w-20 h-20 rounded-full overflow-hidden bg-white shadow-sm">
-          <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
+          <Image src={imageUrl} alt={name} className="w-full h-full object-cover" />
         </div>
       </div>
 
