@@ -18,7 +18,7 @@ export default function TestimonialCard({
   avatar,
 }: TestimonialCardProps) {
   // Choose theme colors dynamically based on the entity type
-  const isBrand = type === "Brand";
+  const isBrand = type === "BRAND";
   const themeColor = isBrand ? "bg-blue-500" : "bg-indigo-500";
   const badgeStyle = isBrand
     ? "bg-blue-50 text-blue-600"
@@ -39,7 +39,14 @@ export default function TestimonialCard({
 
       {/* Avatar Frame */}
       <div className="w-20 h-20 rounded-full overflow-hidden mb-4 bg-white shadow-sm ring-1 ring-gray-50">
-        <Image src={avatar} alt={name} className="w-full h-full object-cover" />
+        <Image
+          src={avatar}
+          alt={name}
+          width={80}
+          height={80}
+          unoptimized
+          className="w-full h-full object-cover"
+        />
       </div>
 
       {/* Profile Info */}
