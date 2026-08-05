@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Mail, Lock, User, Loader2 } from "lucide-react";
 import { signUp } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { completeSignup } from "@/actions/auth.actions";
 
 type Role = "BRAND" | "CREATOR";
 
@@ -69,8 +70,9 @@ export default function SignupForm({
       email,
       password,
       name,
-      // role,
+      role,
     });
+
     console.log("this is data: ", data);
     if (authError) {
       setError(authError.message || "Something went wrong. Please try again.");
@@ -78,13 +80,11 @@ export default function SignupForm({
       return;
     }
 
+    await completeSignup(role);
+
     toast.success("Account created successfully!");
     // Route to the appropriate dashboard based on their selection
-    if (role === "BRAND") {
-      router.push("/dashboard/brand");
-    } else {
-      router.push("/dashboard/creator");
-    }
+    router.push(role === "BRAND" ? "/dashboard/brand" : "/dashboard/creator");
   };
 
   return (
