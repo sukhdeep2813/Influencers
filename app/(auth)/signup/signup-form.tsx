@@ -70,7 +70,6 @@ export default function SignupForm({
       email,
       password,
       name,
-      role,
     });
 
     console.log("this is data: ", data);
@@ -80,7 +79,13 @@ export default function SignupForm({
       return;
     }
 
-    await completeSignup(role);
+   const result = await completeSignup(role, name);
+
+    if (result.error) {
+      setError(result.error);
+      setIsLoading(false);
+      return;
+    }
 
     toast.success("Account created successfully!");
     // Route to the appropriate dashboard based on their selection
