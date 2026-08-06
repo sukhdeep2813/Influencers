@@ -12,9 +12,4 @@ export const auth = betterAuth({
     // requireEmailVerification: true
   },
 
-  user: {
-    additionalFields: {
-      role: { type: "string", required: true, defaultValue: "CREATOR" },
-    },
-  },
 });
