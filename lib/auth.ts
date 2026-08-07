@@ -11,5 +11,12 @@ export const auth = betterAuth({
     // Optional: Require email verification before login
     // requireEmailVerification: true
   },
-
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false, // Ensures Better Auth doesn't block signups if missing
+      },
+    },
+  },
 });
