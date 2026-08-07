@@ -66,11 +66,11 @@ model CreatorProfile {
   user      User     @relation(fields: [userId], references: [id])
 
   name      String
-  handle    String   @unique
+  handle    String?   @unique
   bio       String?
-  niche     String
-  followers Int
-  avgViews  Int
+  niche     String?
+  followers Int?
+  avgViews  Int?
   country   String?
   city      String?
   verified  Boolean  @default(false)
@@ -85,8 +85,8 @@ model BrandProfile {
   userId      String   @unique
   user        User     @relation(fields: [userId], references: [id])
 
-  companyName String
-  industry    String
+  companyName String?
+  industry    String?
   website     String?
   logoUrl     String?
   verified    Boolean  @default(false)
