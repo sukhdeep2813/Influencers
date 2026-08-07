@@ -4,7 +4,7 @@
 async function getSignupPageData() {
   // Example: feature flags, config, prefill, etc.
   return {
-    defaultRole: "brand" as const,
+    defaultRole: "BRAND" as const,
     companyNameHint: "Acme Corp",
     creatorNameHint: "Alex Doe",
     // You could also fetch from DB, CMS, env, etc.
