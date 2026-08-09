@@ -15,7 +15,9 @@ export const auth = betterAuth({
     additionalFields: {
       role: {
         type: "string",
+
         required: false, // Ensures Better Auth doesn't block signups if missing
+        returns: true, // Ensures this field is returned in the session
       },
     },
   },
