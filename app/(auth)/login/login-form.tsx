@@ -23,11 +23,15 @@ export default function LoginForm() {
     setIsPending(true);
     setErrorMessage("");
 
+
+
     const { data, error } = await signIn.email({
       email,
       password,
       rememberMe,
     });
+    console.log("signIn response:", { data, error });
+    
 
     if (error) {
       setErrorMessage(error.message || "Invalid email or password");
