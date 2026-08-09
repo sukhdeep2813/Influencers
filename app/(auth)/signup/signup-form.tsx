@@ -73,6 +73,9 @@ export default function SignupForm({
     });
 
     console.log("this is data: ", data);
+    const r =  data?.user?.role;
+    console.log("this is role: ", r);
+    
     if (authError) {
       setError(authError.message || "Something went wrong. Please try again.");
       setIsLoading(false);
