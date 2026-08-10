@@ -18,13 +18,11 @@ export default function Navbar() {
 
   const isBrand = session?.user?.role === "BRAND";
 
-  const dashboardUrl = isBrand
-    ? "/dashboard/brand"
-    : "/dashboard/creator";
+  const dashboardUrl = isBrand ? "/dashboard/brand" : "/dashboard/creator";
 
   const authUrl = session ? dashboardUrl : "/login";
   const authLabel = session ? "Dashboard" : "Log in";
-
+  
   const closeMenu = () => {
     setIsOpen(false);
   };
@@ -49,7 +47,7 @@ export default function Navbar() {
         className={
           mobile
             ? "mt-3 rounded-xl border border-gray-100 bg-white py-3 text-center text-gray-900 transition hover:bg-gray-100"
-            : "rounded-lg bg-gradient-to-r from-fuchsia-600 to-violet-600 px-5 py-2 text-sm font-medium text-white shadow-md transition hover:opacity-95"
+            : "rounded-lg bg-linear-to-r from-fuchsia-600 to-violet-600 px-5 py-2 text-sm font-medium text-white shadow-md transition hover:opacity-95"
         }
       >
         {authLabel}
