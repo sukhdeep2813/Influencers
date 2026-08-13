@@ -20,7 +20,7 @@ export default async function CreatorLayout({
   }
 
   return (
-    <div className="min-h-screen w-full bg-gray-50/50 pt-28">
+    <div className="min-h-screen w-full bg-gray-50/50  ">
       {/* Container for full dashboard view */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {children}
