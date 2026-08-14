@@ -1,13 +1,13 @@
 import DashboardHeader from "@/app/(creator)/dashboard/creator/components/dashboard-header";
 import DashboardHero from "@/app/(creator)/dashboard/creator/components/dashboard-hero";
 import StatsGrid from "@/app/(creator)/dashboard/creator/components/stats-grid";
-// import AttentionCard from "@/app/(creator)/dashboard/creator/components/attention-card";
-// import EarningsCard from "@/app/(creator)/dashboard/creator/components/earnings-card";
-// import CampaignsCard from "@/app/(creator)/dashboard/creator/components/campaigns-card";
-// import AudienceCard from "@/app/(creator)/dashboard/creator/components/audience-card";
-// import AvailabilityCard from "@/app/(creator)/dashboard/creator/components/availability-card";
-// import PortfolioCard from "@/app/(creator)/dashboard/creator/components/PortfolioCard";
-// import ReviewsCard from "@/app/(creator)/dashboard/creator/components/ReviewsCard";
+import AttentionCard from "@/app/(creator)/dashboard/creator/components/attention-card";
+import EarningsCard from "@/app/(creator)/dashboard/creator/components/earnings-card";
+import CampaignsCard from "@/app/(creator)/dashboard/creator/components/campaigns-card";
+import AudienceCard from "@/app/(creator)/dashboard/creator/components/audience-card";
+import AvailabilityCard from "@/app/(creator)/dashboard/creator/components/availability-card";
+import PortfolioCard from "@/app/(creator)/dashboard/creator/components/portfolio-card";
+import ReviewsCard from "@/app/(creator)/dashboard/creator/components/reviews-card";
 
 export default function CreatorDashboard() {
   return (
@@ -20,22 +20,25 @@ export default function CreatorDashboard() {
         <div className="mt-6 space-y-6">
           <StatsGrid />
 
-          {/* // <section className="grid gap-6 lg:grid-cols-2">
-          //   <AttentionCard />
-          //   <EarningsCard />
-          // </section>
+          <section className="grid gap-6 lg:grid-cols-2">
+            <AttentionCard />
+            <EarningsCard />
+          </section>
 
-          // <section className="grid gap-6 lg:grid-cols-3">
-          //   <CampaignsCard />
-          //   <AudienceCard />
-          //   <AvailabilityCard />
-          // </section>
+          <section className="grid gap-6 lg:grid-cols-2">
+            <CampaignsCard />
+            <AudienceCard />
+          </section>
+          
+          <section className="grid gap-6">
+            <AvailabilityCard />
+          </section>
 
-          // <section className="grid gap-6 lg:grid-cols-2">
-          //   <PortfolioCard />
-          //   <ReviewsCard />
-          // </section> */}
-        </div> 
+          <section className="grid gap-6">
+            <PortfolioCard />
+            <ReviewsCard />
+          </section>
+        </div>
       </main>
     </div>
   );
