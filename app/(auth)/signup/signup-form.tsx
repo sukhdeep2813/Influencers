@@ -96,7 +96,7 @@ export default function SignupForm({
   return (
     <div className="w-full">
       <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-        <aside className="hidden lg:flex flex-col justify-between rounded-[36px] border border-gray-100 bg-gradient-to-br from-white via-slate-50 to-white p-10 shadow-[var(--card-shadow)] animate-fade-up">
+        <aside className="hidden lg:flex flex-col justify-between rounded-[36px] border border-gray-100 bg-linear-to-br from-white via-slate-50 to-white p-10 shadow-[var(--card-shadow)] animate-fade-up">
           <div>
             <p className="inline-flex items-center rounded-full border border-fuchsia-200 bg-fuchsia-50 px-4 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-fuchsia-600">
               Premium onboarding
@@ -265,7 +265,7 @@ export default function SignupForm({
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 mt-6 bg-gradient-to-r from-fuchsia-600 to-violet-600 text-white font-semibold rounded-lg hover:opacity-95 transition-colors disabled:opacity-70 disabled:cursor-not-allowed shadow-md"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 mt-6 bg-linear-to-r from-fuchsia-600 to-violet-600 text-white font-semibold rounded-lg hover:opacity-95 transition-colors disabled:opacity-70 disabled:cursor-not-allowed shadow-md"
             >
               {isLoading ? (
                 <>
