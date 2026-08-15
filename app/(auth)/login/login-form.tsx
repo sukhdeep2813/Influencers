@@ -23,15 +23,12 @@ export default function LoginForm() {
     setIsPending(true);
     setErrorMessage("");
 
-
-
     const { data, error } = await signIn.email({
       email,
       password,
       rememberMe,
     });
     console.log("signIn response:", { data, error });
-    
 
     if (error) {
       setErrorMessage(error.message || "Invalid email or password");
@@ -39,15 +36,18 @@ export default function LoginForm() {
       return;
     }
 
-    // Redirect to the appropriate dashboard on success
-    // You can refine this later to redirect based on the user's role
-    router.push("/brand/dashboard");
+    const userRole = (data?.user as { role?: string })?.role;
+    if (userRole === "CREATOR") {
+      router.push("/dashboard/creator");
+    } else {
+      router.push("/dashboard/brand");
+    }
   };
 
   const handleSocialLogin = async (provider: "google" | "apple") => {
     await signIn.social({
       provider,
-      callbackURL: "/brand/dashboard",
+      callbackURL: "/dashboard/brand", // Redirect after successful login
     });
   };
 
