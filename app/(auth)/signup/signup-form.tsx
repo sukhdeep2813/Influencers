@@ -65,34 +65,32 @@ export default function SignupForm({
       setIsLoading(false);
       return;
     }
+    try {
+      const { data, error: authError } = await signUp.email({
+        email,
+        password,
+        name,
+        role,
+      });
 
-    const { data, error: authError } = await signUp.email({
-      email,
-      password,
-      name,
-    });
+      if (authError) {
+        setError(
+          authError.message || "Something went wrong. Please try again.",
+        );
+        setIsLoading(false);
+        return;
+      }
 
-    console.log("this is data: ", data);
-    const r =  data?.user?.role;
-    console.log("this is role: ", r);
-    
-    if (authError) {
-      setError(authError.message || "Something went wrong. Please try again.");
+      toast.success("Account created successfully!");
+      router.push(role === "BRAND" ? "/dashboard/brand" : "/dashboard/creator");
+      router.refresh();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "An unexpected error occurred.";
+      setError(message);
+    } finally {
       setIsLoading(false);
-      return;
     }
-
-   const result = await completeSignup(role, name);
-
-    if (result.error) {
-      setError(result.error);
-      setIsLoading(false);
-      return;
-    }
-
-    toast.success("Account created successfully!");
-    // Route to the appropriate dashboard based on their selection
-    router.push(role === "BRAND" ? "/dashboard/brand" : "/dashboard/creator");
   };
 
   return (
