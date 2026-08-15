@@ -1,5 +1,5 @@
 // Import PrismaClient from your generated path (from Step 1)
-import { PrismaClient } from "../generated/prisma/client";
+import { PrismaClient } from "../generated/prisma";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
