@@ -21,4 +21,27 @@ export const auth = betterAuth({
       },
     },
   },
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          if (user.role === "BRAND") {
+            await prisma.brandProfile.create({
+              data: {
+                userId: user.id,
+                companyName: user.name,
+              },
+            });
+          } else {
+            await prisma.creatorProfile.create({
+              data: {
+                userId: user.id,
+                name: user.name,
+              },
+            });
+          }
+        },
+      },
+    },
+  },
 });
