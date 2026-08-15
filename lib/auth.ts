@@ -11,6 +11,12 @@ export const auth = betterAuth({
     // Optional: Require email verification before login
     // requireEmailVerification: true
   },
+  trustedOrigins: [
+    "http://localhost:3000",
+    "https://influencers-lime.vercel.app",
+    // If you access via custom domains or preview URLs:
+    process.env.BETTER_AUTH_URL || "",
+  ].filter(Boolean),
   user: {
     additionalFields: {
       role: {
