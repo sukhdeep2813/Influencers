@@ -47,7 +47,7 @@ export default function DashboardHero() {
 
         <button
           type="button"
-          className="inline-flex h-[58px] items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-lg"
+          className="inline-flex h-[58px] cursor-pointer items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-lg"
         >
           Complete profile
           <ArrowUpRight className="h-4 w-4" />
