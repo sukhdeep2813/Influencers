@@ -21,7 +21,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-
 }
 
 // ------------------------------------------------------
@@ -36,63 +35,78 @@ enum Role {
 // 2. CORE USER MODEL (Updated for Better Auth)
 // ------------------------------------------------------
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  role          Role      @default(BRAND)
-  
+  id    String @id @default(uuid())
+  email String @unique
+  role  Role   @default(BRAND)
+
   // --- New fields required by Better Auth ---
   name          String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean @default(false)
   image         String?
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // --- Your Custom Relations ---
   brandProfile   BrandProfile?
   creatorProfile CreatorProfile?
 
   // --- Better Auth Relations ---
-  Session       Session[]
-  Account       Account[]
+  Session Session[]
+  Account Account[]
 }
 
 // ------------------------------------------------------
 // 3. YOUR PROFILES
 // ------------------------------------------------------
 model CreatorProfile {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id])
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
 
   name      String
-  handle    String?   @unique
+  handle    String? @unique
   bio       String?
   niche     String?
   followers Int?
   avgViews  Int?
   country   String?
   city      String?
-  verified  Boolean  @default(false)
+  verified  Boolean @default(false)
   avatarUrl String?
+
+  portfolioItems PortfolioItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+model PortfolioItem {
+  id           String         @id @default(uuid())
+  creatorId    String
+  creator      CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  mediaUrl     String
+  thumbnailUrl String?
+  views        Int            @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
 model BrandProfile {
-  id          String   @id @default(uuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id])
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
 
   companyName String?
   industry    String?
   website     String?
   logoUrl     String?
-  verified    Boolean  @default(false)
+  verified    Boolean @default(false)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ------------------------------------------------------
@@ -130,10 +144,10 @@ model Account {
 }
 
 model Verification {
-  id         String    @id
+  id         String   @id
   identifier String
   value      String
   expiresAt  DateTime
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
