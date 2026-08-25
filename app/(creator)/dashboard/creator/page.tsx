@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import prisma from "@/lib/prisma"; // Adjust this path if your prisma client is located elsewhere
+import prisma from "@/lib/prisma"; 
 
 import DashboardHeader from "@/app/(creator)/dashboard/creator/components/dashboard-header";
 import DashboardHero from "@/app/(creator)/dashboard/creator/components/dashboard-hero";
@@ -28,6 +28,7 @@ export default async function CreatorDashboard() {
     where: {
       userId: session.user.id,
     },
+
     include: {
       portfolioItems: {
         orderBy: {
@@ -35,11 +36,24 @@ export default async function CreatorDashboard() {
         },
         take: 4,
       },
+
+      availability: {
+        where: {
+          date: {
+            gte: new Date(),
+          },
+        },
+        orderBy: {
+          date: "asc",
+        },
+        take: 7,
+      },
     },
   });
 
-  // Extract items safely (defaults to empty array if no profile or items exist yet)
+  // Extracting  items safely (defaults to empty array if no profile or items exist yet)
   const portfolioData = creatorProfile?.portfolioItems ?? [];
+  const availabilityData = creatorProfile?.availability ?? [];
   return (
     <div className="min-h-screen bg-slate-50">
       <DashboardHeader />
@@ -61,7 +75,7 @@ export default async function CreatorDashboard() {
           </section>
 
           <section className="grid gap-6">
-            <AvailabilityCard />
+            <AvailabilityCard availability={availabilityData} />
           </section>
 
           <section className="grid gap-6">
