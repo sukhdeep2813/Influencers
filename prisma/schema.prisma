@@ -76,6 +76,7 @@ model CreatorProfile {
   avatarUrl String?
 
   portfolioItems PortfolioItem[]
+  availability   CreatorAvailability[] 
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -93,6 +94,33 @@ model PortfolioItem {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 }
+
+enum AvailabilityStatus {
+  AVAILABLE
+  BUSY
+  BOOKED
+}
+
+model CreatorAvailability {
+  id String @id @default(uuid())
+
+  creatorId String
+   creator CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+
+  date DateTime
+  status AvailabilityStatus @default(AVAILABLE)
+
+  slots Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([creatorId, date])
+  @@index([creatorId, date])
+}
+ 
+
 
 model BrandProfile {
   id     String @id @default(uuid())
