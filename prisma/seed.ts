@@ -99,12 +99,68 @@ async function main() {
       creatorId: creator.id,
       ...item,
     })),
-    skipDuplicates: true, // ✅ Prevents duplicate entries on matching (creatorId, date)
+    skipDuplicates: true,
   });
 
   console.log(
     `✅ Availability seed complete! Added ${result.count} new dates.`,
   );
+
+  // -------------------------------------------------------------------
+  // 5. NEW: SEED REVIEWS
+  // -------------------------------------------------------------------
+  let brand = await prisma.brandProfile.findFirst();
+
+  if (!brand) {
+    console.log("No BrandProfile found. Creating a default brand...");
+    const dummyBrandUser = await prisma.user.create({
+      data: {
+        email: "contact@glowskincare.com",
+        name: "Glow Skincare",
+        role: "BRAND",
+        brandProfile: {
+          create: {
+            companyName: "Glow Skincare",
+            industry: "Beauty",
+          },
+        },
+      },
+      include: { brandProfile: true },
+    });
+    // Use the newly created brand profile
+    brand = dummyBrandUser.brandProfile!;
+  }
+
+  const existingReviewsCount = await prisma.review.count({
+    where: { creatorId: creator.id },
+  });
+
+  if (existingReviewsCount === 0) {
+    console.log("Seeding reviews...");
+    await prisma.review.createMany({
+      data: [
+        {
+          creatorId: creator.id,
+          brandId: brand.id,
+          rating: 5,
+          comment:
+            "Absolutely incredible to work with! The content was perfectly aligned with our brand guidelines.",
+        },
+        {
+          creatorId: creator.id,
+          brandId: brand.id,
+          rating: 4,
+          comment:
+            "Great communication throughout the campaign. The audience engagement was exactly what we were hoping for.",
+        },
+      ],
+    });
+    console.log("✅ Reviews seed complete!");
+  } else {
+    console.log(
+      `ℹ️ Reviews already exist (${existingReviewsCount} found). Skipping.`,
+    );
+  }
 }
 
 main()
