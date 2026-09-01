@@ -1,15 +1,36 @@
 import { ArrowUpRight, Star, Quote } from "lucide-react";
-import { reviews } from "@/app/(creator)/dashboard/creator/data/reviews-data";
 import { SectionHeader } from "./section-header";
+import { Review, BrandProfile } from "../../../../../generated/prisma";
+import Link from "next/link";
 
-export default function ReviewsCard() {
+// 1. Define the compound type for a Review that includes its Brand
+type ReviewWithBrand = Review & { brand: BrandProfile };
+
+interface ReviewsCardProps {
+  reviews: ReviewWithBrand[];
+}
+
+export default function ReviewsCard({ reviews }: ReviewsCardProps) {
+  // 2. Dynamically calculate the average rating based on the database
+  const totalReviews = reviews.length;
+  const averageRating =
+    totalReviews > 0
+      ? (
+          reviews.reduce((acc, current) => acc + current.rating, 0) /
+          totalReviews
+        ).toFixed(1)
+      : "0.0";
+
   return (
     <article className="group relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm transition-all duration-300 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-200/40 sm:p-6">
       {/* Subtle background glow */}
       <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-orange-100/50 blur-3xl transition-all duration-500 group-hover:bg-orange-200/60" />
 
       <div className="relative">
-        <SectionHeader title="Recent reviews" action="See all 24" />
+        <SectionHeader
+          title="Recent reviews"
+          action={`See all ${totalReviews}`}
+        />
 
         {/* Rating summary */}
         <div className="mt-5 flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
@@ -21,18 +42,21 @@ export default function ReviewsCard() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xl font-bold tracking-tight text-slate-950">
-                  4.9
+                  {averageRating}
                 </span>
 
                 <div className="flex items-center gap-0.5 text-orange-400">
                   {Array.from({ length: 5 }).map((_, index) => (
-                    <Star key={index} className="h-3.5 w-3.5 fill-current" />
+                    <Star
+                      key={index}
+                      className={`h-3.5 w-3.5 ${index < Math.round(Number(averageRating)) ? "fill-current" : "text-slate-200"}`}
+                    />
                   ))}
                 </div>
               </div>
 
               <p className="mt-0.5 text-[11px] font-medium text-slate-500">
-                Based on 24 brand reviews
+                Based on {totalReviews} brand reviews
               </p>
             </div>
           </div>
@@ -40,7 +64,7 @@ export default function ReviewsCard() {
           <div className="hidden text-right sm:block">
             <p className="text-xs font-medium text-slate-400">Reputation</p>
             <p className="mt-0.5 text-sm font-bold text-emerald-600">
-              Excellent
+              {Number(averageRating) >= 4.5 ? "Excellent" : "Good"}
             </p>
           </div>
         </div>
@@ -48,7 +72,14 @@ export default function ReviewsCard() {
         {/* Reviews */}
         <div className="mt-5 space-y-3">
           {reviews.map((review) => {
-            const initials = review.brand
+            // Safely extract brand name and format date
+            const brandName = review.brand?.companyName || "Verified Brand";
+            const reviewDate = new Intl.DateTimeFormat("en-US", {
+              month: "short",
+              year: "numeric",
+            }).format(new Date(review.createdAt));
+
+            const initials = brandName
               .split(" ")
               .map((word) => word[0])
               .join("")
@@ -81,17 +112,17 @@ export default function ReviewsCard() {
 
                     <div className="min-w-0">
                       <p className="truncate text-sm font-bold text-slate-950">
-                        {review.brand}
+                        {brandName}
                       </p>
 
                       <p className="mt-0.5 truncate text-[10px] font-medium text-slate-400">
-                        {review.reviewer} · {review.role}
+                        Brand Partner · {review.brand?.industry || "Marketing"}
                       </p>
                     </div>
                   </div>
 
                   <span className="shrink-0 text-[10px] font-medium text-slate-400">
-                    {review.date}
+                    {reviewDate}
                   </span>
                 </div>
 
@@ -111,7 +142,7 @@ export default function ReviewsCard() {
 
                 {/* Review */}
                 <p className="relative mt-2.5 text-xs leading-5 text-slate-500 sm:text-sm sm:leading-6">
-                  “{review.review}”
+                  “{review.comment}”
                 </p>
               </div>
             );
@@ -119,8 +150,8 @@ export default function ReviewsCard() {
         </div>
 
         {/* Footer */}
-        <button
-          type="button"
+        <Link
+          href="/dashboard/creator/reviews"
           className="
             mt-5 flex w-full items-center
             justify-center gap-2
@@ -135,7 +166,7 @@ export default function ReviewsCard() {
         >
           View all reviews
           <ArrowUpRight className="h-3.5 w-3.5" />
-        </button>
+        </Link>
       </div>
     </article>
   );
