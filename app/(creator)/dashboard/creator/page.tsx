@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import prisma from "@/lib/prisma"; 
+import prisma from "@/lib/prisma";
 
 import DashboardHeader from "@/app/(creator)/dashboard/creator/components/dashboard-header";
 import DashboardHero from "@/app/(creator)/dashboard/creator/components/dashboard-hero";
@@ -48,12 +48,22 @@ export default async function CreatorDashboard() {
         },
         take: 7,
       },
+      reviews: {
+        include: {
+          brand: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 3,
+      },
     },
   });
 
   // Extracting  items safely (defaults to empty array if no profile or items exist yet)
   const portfolioData = creatorProfile?.portfolioItems ?? [];
   const availabilityData = creatorProfile?.availability ?? [];
+  const reviewsData = creatorProfile?.reviews ?? [];
   return (
     <div className="min-h-screen bg-slate-50">
       <DashboardHeader />
@@ -80,7 +90,7 @@ export default async function CreatorDashboard() {
 
           <section className="grid gap-6">
             <PortfolioCard items={portfolioData} />
-            <ReviewsCard />
+            <ReviewsCard reviews={reviewsData} />
           </section>
         </div>
       </main>
