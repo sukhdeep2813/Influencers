@@ -78,6 +78,7 @@ model CreatorProfile {
   portfolioItems PortfolioItem[]
   availability   CreatorAvailability[] 
   reviews       Review[]
+  campaigns      CampaignCreator[]
 
 
   createdAt DateTime @default(now())
@@ -157,9 +158,70 @@ model BrandProfile {
   verified    Boolean @default(false)
 
   reviews Review[]
+  campaigns Campaign[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Campaign{
+  id String @id @default(uuid())
+
+  brandId String
+  brand BrandProfile @relation(fields :[brandId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+  deliverables String?
+
+
+  budget      Int
+  deadline    DateTime?
+
+  status      CampaignStatus @default(DRAFT)
+  creators     CampaignCreator[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  
+
+}
+enum CampaignStatus{
+  DRAFT
+  IN_REVIEW
+  LIVE
+  COMPLETED
+  CANCELLED
+}
+
+model CampaignCreator {
+  id         String @id @default(uuid())
+
+  // Relation to Campaign
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  // Relation to Creator
+  creatorId  String
+  creator    CreatorProfile @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  // Specific data for this creator's involvement in this campaign
+  status     ApplicationStatus   @default(PENDING) // e.g., APPLIED, ACCEPTED, REJECTED
+  progress   Int     @default(0)       
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Ensures a creator cannot be added to the exact same campaign twice
+  @@unique([campaignId, creatorId])
+}
+
+enum ApplicationStatus{
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
 }
 
 // ------------------------------------------------------
