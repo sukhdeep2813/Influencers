@@ -4,6 +4,13 @@ type DashboardHeroProps = {
   unreadMessages: number;
 };
 
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+};
+
 export default function DashboardHero({
   brandName,
   activeCampaigns,
@@ -30,7 +37,7 @@ export default function DashboardHero({
 
           {/* Heading */}
           <h1 className="max-w-3xl text-3xl font-bold leading-tight tracking-[-0.04em] text-slate-950 sm:text-4xl lg:text-[42px]">
-            Good morning, <span className="text-slate-700">{brandName}</span>
+            {getGreeting()}, <span className="text-slate-700">{brandName}</span>
           </h1>
 
           {/* Description */}
