@@ -5,29 +5,51 @@ import {
   CircleDollarSign,
   Users,
 } from "lucide-react";
+import {
+  Campaign,
+  CampaignStatus,
+  Prisma,
+} from "../../../../../generated/prisma";
 
-import type { Campaign } from "@/app/(brand)/dashboard/brand/data/campaign-data";
-
+// 1. Extend the Prisma type in case you include the creators relation later
+type CampaignWithCreators = Prisma.CampaignGetPayload<{
+  include: {
+    creators: {
+      include: {
+        creator: true;
+      };
+    };
+  };
+}>;
 type CampaignsCardProps = {
-  campaigns: Campaign[];
+  campaigns: CampaignWithCreators[];
 };
 
-const statusStyles = {
-  Live: {
-    wrapper: "border-emerald-200 bg-emerald-50 text-emerald-700",
-    dot: "bg-emerald-500",
-  },
-
-  "In review": {
-    wrapper: "border-amber-200 bg-amber-50 text-amber-700",
-    dot: "bg-amber-500",
-  },
-
-  Draft: {
-    wrapper: "border-slate-200 bg-slate-50 text-slate-600",
-    dot: "bg-slate-400",
-  },
-} as const;
+// 2. Map Prisma Database ENUMs to your UI styles
+const getStatusConfig = (status: CampaignStatus) => {
+  switch (status) {
+    case "LIVE":
+    case "COMPLETED":
+      return {
+        wrapper: "border-emerald-200 bg-emerald-50 text-emerald-700",
+        dot: "bg-emerald-500",
+        label: "Live",
+      };
+    case "IN_REVIEW":
+      return {
+        wrapper: "border-amber-200 bg-amber-50 text-amber-700",
+        dot: "bg-amber-500",
+        label: "In review",
+      };
+    case "DRAFT":
+    default:
+      return {
+        wrapper: "border-slate-200 bg-slate-50 text-slate-600",
+        dot: "bg-slate-400",
+        label: "Draft",
+      };
+  }
+};
 
 const avatarStyles = [
   "bg-orange-100 text-orange-700",
@@ -36,7 +58,29 @@ const avatarStyles = [
   "bg-violet-100 text-violet-700",
 ];
 
+// Helper to format currency (e.g., 50000 -> ₹50,000)
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
+// Helper to format dates
+const formatDate = (date: Date | null) => {
+  if (!date) return "No deadline";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(date));
+};
+
 export default function CampaignsCard({ campaigns }: CampaignsCardProps) {
+  // Count active campaigns (anything not DRAFT)
+  const activeCount = campaigns.filter((c) => c.status !== "DRAFT").length;
+
   return (
     <section
       id="campaigns"
@@ -77,10 +121,7 @@ export default function CampaignsCard({ campaigns }: CampaignsCardProps) {
                 text-slate-600
               "
             >
-              {
-                campaigns.filter((campaign) => campaign.status !== "Draft")
-                  .length
-              }
+              {activeCount}
             </span>
           </div>
 
@@ -116,7 +157,17 @@ export default function CampaignsCard({ campaigns }: CampaignsCardProps) {
       {/* Campaign list */}
       <div className="divide-y divide-slate-100">
         {campaigns.map((campaign) => {
-          const status = statusStyles[campaign.status];
+          const status = getStatusConfig(campaign.status);
+          const campaignCreators = campaign.creators || [];
+
+          // Temporary mock data for progress/spent since it lives in the junction table
+          const spent = 0;
+          const progress =
+            campaign.status === "LIVE"
+              ? 45
+              : campaign.status === "IN_REVIEW"
+                ? 90
+                : 0;
 
           return (
             <article
@@ -161,7 +212,7 @@ export default function CampaignsCard({ campaigns }: CampaignsCardProps) {
                           className={`h-1.5 w-1.5 rounded-full ${status.dot}`}
                         />
 
-                        {campaign.status}
+                        {status.label}
                       </span>
                     </div>
 
@@ -205,13 +256,15 @@ export default function CampaignsCard({ campaigns }: CampaignsCardProps) {
                   <div className="flex items-center gap-2">
                     <Users size={14} className="shrink-0 text-slate-400" />
 
-                    {campaign.creators.length > 0 ? (
+                    {campaignCreators.length > 0 ? (
                       <div className="flex items-center">
                         <div className="flex -space-x-2">
-                          {campaign.creators.map((creator, index) => (
-                            <span
-                              key={`${campaign.id}-${creator}`}
-                              className={`
+                          {campaignCreators
+                            .slice(0, 3)
+                            .map((creator, index) => (
+                              <span
+                                key={index}
+                                className={`
                                 grid h-7 w-7 place-items-center
                                 rounded-full
                                 border-2 border-white
@@ -219,15 +272,15 @@ export default function CampaignsCard({ campaigns }: CampaignsCardProps) {
                                 ring-1 ring-slate-100
                                 ${avatarStyles[index % avatarStyles.length]}
                               `}
-                            >
-                              {creator}
-                            </span>
-                          ))}
+                              >
+                                CR
+                              </span>
+                            ))}
                         </div>
 
-                        {campaign.creators.length > 3 && (
+                        {campaignCreators.length > 3 && (
                           <span className="ml-2 text-[11px] font-medium text-slate-500">
-                            +{campaign.creators.length - 3}
+                            +{campaignCreators.length - 3}
                           </span>
                         )}
                       </div>
@@ -241,7 +294,7 @@ export default function CampaignsCard({ campaigns }: CampaignsCardProps) {
                   {/* Date */}
                   <div className="flex items-center gap-2 text-[11px] text-slate-500">
                     <CalendarDays size={14} className="text-slate-400" />
-                    {campaign.date}
+                    {formatDate(campaign.deadline)}
                   </div>
 
                   {/* Budget */}
@@ -250,15 +303,15 @@ export default function CampaignsCard({ campaigns }: CampaignsCardProps) {
 
                     <span>
                       <span className="font-semibold text-slate-700">
-                        {campaign.spent}
+                        {formatCurrency(spent)}
                       </span>{" "}
-                      / {campaign.budget}
+                      / {formatCurrency(campaign.budget)}
                     </span>
                   </div>
                 </div>
 
                 {/* Progress */}
-                {campaign.progress > 0 && (
+                {progress > 0 && (
                   <div>
                     <div className="mb-1.5 flex items-center justify-between">
                       <span className="text-[10px] font-medium text-slate-400">
@@ -266,7 +319,7 @@ export default function CampaignsCard({ campaigns }: CampaignsCardProps) {
                       </span>
 
                       <span className="text-[10px] font-bold text-slate-600">
-                        {campaign.progress}%
+                        {progress}%
                       </span>
                     </div>
 
@@ -276,16 +329,13 @@ export default function CampaignsCard({ campaigns }: CampaignsCardProps) {
                           h-full rounded-full
                           transition-all duration-700
                           ${
-                            campaign.status === "In review"
+                            campaign.status === "IN_REVIEW"
                               ? "bg-amber-500"
                               : "bg-orange-500"
                           }
                         `}
                         style={{
-                          width: `${Math.min(
-                            Math.max(campaign.progress, 0),
-                            100,
-                          )}%`,
+                          width: `${Math.min(Math.max(progress, 0), 100)}%`,
                         }}
                       />
                     </div>
