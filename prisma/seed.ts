@@ -161,8 +161,177 @@ async function main() {
       `ℹ️ Reviews already exist (${existingReviewsCount} found). Skipping.`,
     );
   }
-}
 
+  const existingCampaignsCount = await prisma.campaign.count({
+    where: {
+      brandId: brand.id,
+    },
+  });
+
+  let campaigns = await prisma.campaign.findMany({
+    where: {
+      brandId: brand.id,
+    },
+  });
+
+  if (existingCampaignsCount === 0) {
+    console.log("Seeding campaigns...");
+
+    await prisma.campaign.createMany({
+      data: [
+        {
+          brandId: brand.id,
+          title: "Summer Glow Campaign",
+          description:
+            "Promote our new summer skincare collection through authentic creator content.",
+          deliverables:
+            "2 Instagram Reels, 3 Instagram Stories, 1 product review",
+          budget: 50000,
+          deadline: new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate() + 14,
+          ),
+          status: "LIVE",
+        },
+        {
+          brandId: brand.id,
+          title: "Instagram Product Launch",
+          description:
+            "Launch our latest skincare product with engaging creator-led content.",
+          deliverables:
+            "1 Instagram Reel, 2 Instagram Stories, product photography",
+          budget: 75000,
+          deadline: new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate() + 21,
+          ),
+          status: "IN_REVIEW",
+        },
+        {
+          brandId: brand.id,
+          title: "Diwali Beauty Campaign",
+          description:
+            "A festive campaign focused on beauty, skincare and gifting.",
+          deliverables:
+            "3 Instagram Reels, 5 Instagram Stories, 1 YouTube Short",
+          budget: 100000,
+          deadline: new Date(
+            today.getFullYear(),
+            today.getMonth() + 2,
+            today.getDate(),
+          ),
+          status: "DRAFT",
+        },
+        {
+          brandId: brand.id,
+          title: "Winter Skincare Campaign",
+          description:
+            "Seasonal skincare campaign highlighting hydration and winter care.",
+          deliverables:
+            "2 Instagram Reels, 2 Instagram Stories, 1 product demonstration",
+          budget: 60000,
+          deadline: new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate() - 10,
+          ),
+          status: "COMPLETED",
+        },
+      ],
+    });
+
+    console.log("✅ Campaigns seed complete!");
+
+    // Fetch the newly created campaigns
+    campaigns = await prisma.campaign.findMany({
+      where: {
+        brandId: brand.id,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+  } else {
+    console.log(
+      `ℹ️ Campaigns already exist (${existingCampaignsCount} found). Skipping.`,
+    );
+  }
+
+  // -------------------------------------------------------------------
+  // 7. SEED CAMPAIGN CREATOR RELATIONSHIPS
+  // -------------------------------------------------------------------
+
+  const existingCampaignCreatorsCount = await prisma.campaignCreator.count({
+    where: {
+      creatorId: creator.id,
+    },
+  });
+
+  if (existingCampaignCreatorsCount === 0) {
+    console.log("Seeding campaign creators...");
+
+    if (campaigns.length === 0) {
+      throw new Error(
+        "No campaigns found. Cannot create CampaignCreator records.",
+      );
+    }
+
+    const campaignCreatorData = [];
+
+    // Summer Glow Campaign → Accepted
+    if (campaigns[0]) {
+      campaignCreatorData.push({
+        campaignId: campaigns[0].id,
+        creatorId: creator.id,
+        status: "ACCEPTED" as const,
+        progress: 65,
+      });
+    }
+
+    // Instagram Product Launch → Pending
+    if (campaigns[1]) {
+      campaignCreatorData.push({
+        campaignId: campaigns[1].id,
+        creatorId: creator.id,
+        status: "PENDING" as const,
+        progress: 0,
+      });
+    }
+
+    // Diwali Beauty Campaign → Rejected
+    if (campaigns[2]) {
+      campaignCreatorData.push({
+        campaignId: campaigns[2].id,
+        creatorId: creator.id,
+        status: "REJECTED" as const,
+        progress: 0,
+      });
+    }
+
+    // Winter Skincare Campaign → Completed
+    if (campaigns[3]) {
+      campaignCreatorData.push({
+        campaignId: campaigns[3].id,
+        creatorId: creator.id,
+        status: "ACCEPTED" as const,
+        progress: 100,
+      });
+    }
+
+    await prisma.campaignCreator.createMany({
+      data: campaignCreatorData,
+      skipDuplicates: true,
+    });
+
+    console.log("✅ Campaign creator seed complete!");
+  } else {
+    console.log(
+      `ℹ️ Campaign creator records already exist (${existingCampaignCreatorsCount} found). Skipping.`,
+    );
+  } // <--- Notice the closing brace is now here!
+}
 main()
   .catch((error) => {
     console.error("Seed error:", error);
