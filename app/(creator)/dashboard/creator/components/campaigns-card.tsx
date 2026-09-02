@@ -1,23 +1,58 @@
 import { ArrowUpRight, CalendarDays, Plus } from "lucide-react";
-import { campaigns } from "@/app/(creator)/dashboard/creator/data/campaigns-data";
 import { SectionHeader } from "@/app/(creator)/dashboard/creator/components/section-header";
+import { ApplicationStatus, Prisma } from "../../../../../generated/prisma";
 
-const statusStyles = {
-  "Due soon": {
-    dot: "bg-orange-500",
-    badge: "bg-orange-50 text-orange-700 ring-orange-100",
-  },
-  Confirmed: {
-    dot: "bg-emerald-500",
-    badge: "bg-emerald-50 text-emerald-700 ring-emerald-100",
-  },
-  Upcoming: {
-    dot: "bg-blue-500",
-    badge: "bg-blue-50 text-blue-700 ring-blue-100",
-  },
-} as const;
+// 1. Let Prisma generate the exact type based on our page.tsx query
+type CreatorCampaign = Prisma.CampaignCreatorGetPayload<{
+  include: {
+    campaign: {
+      include: {
+        brand: true;
+      };
+    };
+  };
+}>;
 
-export default function CampaignsCard() {
+type CampaignsCardProps = {
+  campaigns: CreatorCampaign[];
+};
+
+// 2. Map your database ApplicationStatus to UI styles
+const getStatusConfig = (status: ApplicationStatus) => {
+  switch (status) {
+    case "ACCEPTED":
+      return {
+        dot: "bg-emerald-500",
+        badge: "bg-emerald-50 text-emerald-700 ring-emerald-100",
+        label: "Accepted",
+      };
+    case "PENDING":
+      return {
+        dot: "bg-blue-500",
+        badge: "bg-blue-50 text-blue-700 ring-blue-100",
+        label: "Pending",
+      };
+    case "REJECTED":
+    case "WITHDRAWN":
+    default:
+      return {
+        dot: "bg-slate-400",
+        badge: "bg-slate-50 text-slate-700 ring-slate-200",
+        label: status.charAt(0) + status.slice(1).toLowerCase(),
+      };
+  }
+};
+
+// Helper to format dates dynamically
+const formatDate = (date: Date | null) => {
+  if (!date) return "No deadline";
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+  }).format(new Date(date));
+};
+
+export default function CampaignsCard({ campaigns }: CampaignsCardProps) {
   return (
     <article className="group rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-lg sm:p-6">
       {/* Header */}
@@ -45,13 +80,21 @@ export default function CampaignsCard() {
 
       {/* Campaign list */}
       <div className="space-y-2">
-        {campaigns.map((campaign) => {
-          const style = statusStyles[campaign.status];
+        {campaigns.length === 0 ? (
+          <div className="py-6 text-center text-sm text-slate-500">
+            No active campaigns yet.
+          </div>
+        ) : (
+          campaigns.map((junctionRecord) => {
+            const { campaign } = junctionRecord;
+            const brandName = campaign.brand?.companyName || "Brand";
+            const initials = brandName.slice(0, 2).toUpperCase();
+            const style = getStatusConfig(junctionRecord.status);
 
-          return (
-            <div
-              key={`${campaign.brand}-${campaign.campaign}`}
-              className="
+            return (
+              <div
+                key={junctionRecord.id}
+                className="
                 group/item flex items-center justify-between gap-3
                 rounded-2xl border border-transparent
                 p-3
@@ -59,11 +102,11 @@ export default function CampaignsCard() {
                 hover:border-slate-200
                 hover:bg-slate-50/80
               "
-            >
-              {/* Brand */}
-              <div className="flex min-w-0 items-center gap-3">
-                <div
-                  className="
+              >
+                {/* Brand */}
+                <div className="flex min-w-0 items-center gap-3">
+                  <div
+                    className="
                     grid h-11 w-11 shrink-0 place-items-center
                     rounded-xl
                     bg-slate-950
@@ -72,18 +115,18 @@ export default function CampaignsCard() {
                     transition-transform duration-200
                     group-hover/item:scale-105
                   "
-                >
-                  {campaign.initials}
-                </div>
+                  >
+                    {initials}
+                  </div>
 
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="truncate text-sm font-semibold text-slate-950">
-                      {campaign.brand}
-                    </p>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-sm font-semibold text-slate-950">
+                        {brandName}
+                      </p>
 
-                    <ArrowUpRight
-                      className="
+                      <ArrowUpRight
+                        className="
                         h-3.5 w-3.5 shrink-0
                         text-slate-300
                         opacity-0
@@ -92,38 +135,38 @@ export default function CampaignsCard() {
                         group-hover/item:text-slate-500
                         group-hover/item:opacity-100
                       "
-                    />
+                      />
+                    </div>
+
+                    <p className="mt-0.5 truncate text-xs text-slate-500">
+                      {campaign.title}
+                    </p>
                   </div>
-
-                  <p className="mt-0.5 truncate text-xs text-slate-500">
-                    {campaign.campaign}
-                  </p>
                 </div>
-              </div>
 
-              {/* Due + Status */}
-              <div className="flex shrink-0 flex-col items-end gap-1.5">
-                <p className="text-xs font-medium text-slate-500">
-                  Due {campaign.due}
-                </p>
+                {/* Due + Status */}
+                <div className="flex shrink-0 flex-col items-end gap-1.5">
+                  <p className="text-xs font-medium text-slate-500">
+                    Due {formatDate(campaign.deadline)}
+                  </p>
 
-                <span
-                  className={`
+                  <span
+                    className={`
                     inline-flex items-center gap-1.5
                     rounded-full px-2.5 py-1
                     text-[10px] font-bold
                     ring-1 ring-inset
                     ${style.badge}
                   `}
-                >
-                  <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
-
-                  {campaign.status}
-                </span>
+                  >
+                    <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
+                    {style.label}
+                  </span>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
 
       {/* Bottom CTA */}
