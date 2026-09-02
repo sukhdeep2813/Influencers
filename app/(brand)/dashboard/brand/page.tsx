@@ -1,3 +1,7 @@
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+
 import DashboardHeader from "@/app/(brand)/dashboard/brand/components/dashboard-header";
 import DashboardHero from "@/app/(brand)/dashboard/brand/components/dashboard-hero";
 
@@ -18,16 +22,53 @@ import { messages } from "@/app/(brand)/dashboard/brand/data/message-card-data";
 
 import { SavedCreatorsCard } from "@/app/(brand)/dashboard/brand/components/saved-creators-card";
 import { savedCreators } from "@/app/(brand)/dashboard/brand/data/saved-creator-data";
+import { prisma } from "@/lib/prisma";
 
-export default function CreatorDashboardPage() {
+export default async function CreatorDashboardPage() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session || session.user.role !== "BRAND") {
+    redirect("/login");
+  }
+
+  const brandProfile = await prisma.brandProfile.findUnique({
+    where: {
+      userId: session.user.id,
+    },
+    include: {
+      campaigns: {
+        // ADD THIS INCLUDE BLOCK
+        include: {
+          creators: {
+            include: {
+              creator: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 4,
+      },
+    },
+  });
+  const campaignsData = brandProfile?.campaigns ?? [];
+  console.log("My Campaigns Count:", campaignsData.length);
+  const brandName = brandProfile?.companyName ?? session.user.name ?? "Acme";
+  const activeCampaignsCount = campaignsData.filter(
+    (c) => c.status === "LIVE",
+  ).length;
+
   return (
     <>
       <DashboardHeader />
 
       <main className="mx-auto w-full max-w-[1600px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8 xl:px-10">
         <DashboardHero
-          brandName="Acme"
-          activeCampaigns={4}
+          brandName={brandName}
+          activeCampaigns={activeCampaignsCount}
           unreadMessages={12}
         />
 
@@ -39,7 +80,7 @@ export default function CreatorDashboardPage() {
         />
 
         <section className="mt-6 grid gap-6 xl:grid-cols-2">
-          <CampaignsCard campaigns={campaigns} />
+          <CampaignsCard campaigns={campaignsData} />
           <RecommendedCreatorsCard creators={recommendedCreators} />
         </section>
 

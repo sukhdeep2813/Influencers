@@ -28,15 +28,27 @@ export default async function CreatorDashboard() {
     where: {
       userId: session.user.id,
     },
-
     include: {
+      // ADDED: Fetch the junction table, the campaign, and the brand
+      campaigns: {
+        include: {
+          campaign: {
+            include: {
+              brand: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 4,
+      },
       portfolioItems: {
         orderBy: {
           createdAt: "desc",
         },
         take: 4,
       },
-
       availability: {
         where: {
           date: {
@@ -64,6 +76,7 @@ export default async function CreatorDashboard() {
   const portfolioData = creatorProfile?.portfolioItems ?? [];
   const availabilityData = creatorProfile?.availability ?? [];
   const reviewsData = creatorProfile?.reviews ?? [];
+  const campaignsData = creatorProfile?.campaigns ?? [];
   return (
     <div className="min-h-screen bg-slate-50">
       <DashboardHeader />
@@ -80,7 +93,7 @@ export default async function CreatorDashboard() {
           </section>
 
           <section className="grid gap-6 lg:grid-cols-2">
-            <CampaignsCard />
+           <CampaignsCard campaigns={campaignsData} />
             <AudienceCard />
           </section>
 
