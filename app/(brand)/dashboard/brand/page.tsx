@@ -9,7 +9,6 @@ import StatsGrid from "@/app/(brand)/dashboard/brand/components/stats-grid";
 import { stats } from "@/app/(brand)/dashboard/brand/data/dashboard-data";
 
 import CampaignsCard from "@/app/(brand)/dashboard/brand/components/campaigns-card";
-import { campaigns } from "@/app/(brand)/dashboard/brand/data/campaign-data";
 
 import { RecommendedCreatorsCard } from "@/app/(brand)/dashboard/brand/components/recommended-creators-card";
 import { recommendedCreators } from "@/app/(brand)/dashboard/brand/data/recommended-creator-data";
