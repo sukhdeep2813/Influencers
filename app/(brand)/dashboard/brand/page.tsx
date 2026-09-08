@@ -55,6 +55,39 @@ export default async function CreatorDashboardPage() {
     },
   });
   const campaignsData = brandProfile?.campaigns ?? [];
+
+  const creatorsHiredCount = campaignsData.reduce(
+    (total, campaign) =>
+      total +
+      campaign.creators.filter((creator) => creator.status === "ACCEPTED")
+        .length,
+    0,
+  );
+
+  const applicationCount = campaignsData.reduce(
+    (total, campaign) =>
+      total +
+      campaign.creators.filter((creator) => creator.status === "PENDING")
+        .length,
+    0,
+  );
+
+  const dynamicStats = stats.map((stat) => {
+    if (stat.label === "Creators hired") {
+      return {
+        ...stat,
+        value: String(creatorsHiredCount),
+      };
+    }
+    if (stat.label === "Applications") {
+      return {
+        ...stat,
+        value: String(applicationCount),
+      };
+    }
+    return stat;
+  });
+
   console.log("My Campaigns Count:", campaignsData.length);
   const brandName = brandProfile?.companyName ?? session.user.name ?? "Acme";
   const activeCampaignsCount = campaignsData.filter(
@@ -75,8 +108,8 @@ export default async function CreatorDashboardPage() {
         <StatsGrid
           monthlySpend="₹82,500"
           budgetUsed={64}
-          activeCampaigns={8}
-          stats={stats}
+          activeCampaigns={activeCampaignsCount}
+          stats={dynamicStats}
         />
 
         <section className="mt-6 grid gap-6 xl:grid-cols-2">
