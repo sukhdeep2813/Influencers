@@ -1,6 +1,6 @@
 import type { MessagePreview } from "@/app/(brand)/dashboard/brand/data/message-card-data";
 import { ArrowUpRight, CheckCheck, MessageCircle } from "lucide-react";
-import { SectionHeader } from  "@/app/(brand)/dashboard/brand/components/section-header";
+import { SectionHeader } from "@/app/(brand)/dashboard/brand/components/section-header";
 
 export function MessagesCard({ messages }: { messages: MessagePreview[] }) {
   const unreadCount = messages.filter((message) => message.unread).length;
