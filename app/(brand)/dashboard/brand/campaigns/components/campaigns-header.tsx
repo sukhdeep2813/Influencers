@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CAMPAIGNS_PATH } from "../data/campaign-data";
+import { CAMPAIGNS_PATH } from "./campaign-utils";
 
 export default function CampaignsHeader({ count }: { count: number }) {
   return (
