@@ -2,16 +2,31 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import {
-  CAMPAIGNS_PATH,
-  button,
-  type Campaign,
-} from "../../data/campaign-data";
+import { Prisma } from "../../../../../../../generated/prisma";
+import { CAMPAIGNS_PATH, button } from "../../components/campaign-utils";
 
-export default function CampaignActions({ campaign }: { campaign: Campaign }) {
+// Match the Prisma payload from the server component
+type CampaignWithData = Prisma.CampaignGetPayload<{
+  include: {
+    creators: {
+      include: {
+        creator: {
+          include: { user: true };
+        };
+      };
+    };
+  };
+}>;
+
+export default function CampaignActions({
+  campaign,
+}: {
+  campaign: CampaignWithData;
+}) {
   const [message, setMessage] = useState("");
 
   function downloadReport() {
+    // This will now download a JSON of your actual database record!
     const file = new Blob([JSON.stringify(campaign, null, 2)], {
       type: "application/json",
     });
