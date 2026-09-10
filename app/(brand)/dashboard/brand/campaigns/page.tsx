@@ -7,7 +7,6 @@ import DashboardHeader from "@/app/(brand)/dashboard/brand/components/dashboard-
 import CampaignsHeader from "./components/campaigns-header";
 import CampaignFilters from "./components/campaign-filters";
 import CampaignOverview from "./[id]/components/campaign-overview";
-import { campaigns } from "./data/campaign-data";
 
 export default async function BrandCampaignsPage() {
   const session = await auth.api.getSession({
