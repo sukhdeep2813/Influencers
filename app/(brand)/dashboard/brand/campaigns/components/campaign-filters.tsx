@@ -1,30 +1,46 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  button,
-  control,
-  platforms,
-  statuses,
-  statusLabels,
-  type Campaign,
-  type CampaignStatus,
-  type Platform,
-} from "../data/campaign-data";
+import { Prisma, CampaignStatus } from "../../../../../../generated/prisma";
+import { button, control, platforms, statusLabels } from "./campaign-utils";
 import CampaignCard from "./campaign-card";
 import CampaignTable, { CampaignBoard } from "./campaign-table";
+
+// Define the Prisma payload matching your page.tsx fetch
+type CampaignWithData = Prisma.CampaignGetPayload<{
+  include: {
+    creators: {
+      include: {
+        creator: {
+          include: { user: true };
+        };
+      };
+    };
+  };
+}> & {
+  platforms?: string[];
+  progress?: number;
+};
 
 type View = "cards" | "table" | "board";
 type Sort = "recent" | "budget" | "creators" | "progress";
 
+const PRISMA_STATUSES: CampaignStatus[] = [
+  "DRAFT",
+  "IN_REVIEW",
+  "LIVE",
+  "CANCELLED",
+  "COMPLETED",
+];
+
 export default function CampaignFilters({
   campaigns,
 }: {
-  campaigns: Campaign[];
+  campaigns: CampaignWithData[];
 }) {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<CampaignStatus | "all">("all");
-  const [platform, setPlatform] = useState<Platform | "all">("all");
+  const [platform, setPlatform] = useState<string | "all">("all");
   const [budget, setBudget] = useState("all");
   const [dueSoon, setDueSoon] = useState(false);
   const [sort, setSort] = useState<Sort>("recent");
@@ -62,28 +78,45 @@ export default function CampaignFilters({
     () =>
       campaigns
         .filter((campaign) => {
+          // Fallback array for platforms search
+          const activePlatforms = campaign.platforms || [];
+
           const text =
-            `${campaign.title} ${campaign.description} ${campaign.platforms.join(" ")}`.toLowerCase();
+            `${campaign.title} ${campaign.description || ""} ${activePlatforms.join(" ")} ${campaign.deliverables || ""}`.toLowerCase();
+
+          // Calculate dynamic days left
+          const daysLeft = campaign.deadline
+            ? Math.ceil(
+                (new Date(campaign.deadline).getTime() - new Date().getTime()) /
+                  (1000 * 3600 * 24),
+              )
+            : null;
+
           return (
             text.includes(query.trim().toLowerCase()) &&
             (status === "all" || campaign.status === status) &&
-            (platform === "all" || campaign.platforms.includes(platform)) &&
+            (platform === "all" ||
+              activePlatforms.includes(platform) ||
+              (campaign.deliverables &&
+                campaign.deliverables.includes(platform))) &&
             (budget === "all" ||
               (budget === "under"
                 ? campaign.budget < 50000
                 : campaign.budget >= 50000)) &&
             (!dueSoon ||
-              (campaign.status !== "completed" &&
-                campaign.daysLeft !== null &&
-                campaign.daysLeft >= 0 &&
-                campaign.daysLeft <= 7))
+              (campaign.status !== "COMPLETED" &&
+                daysLeft !== null &&
+                daysLeft >= 0 &&
+                daysLeft <= 7))
           );
         })
         .sort((a, b) => {
           if (sort === "budget") return b.budget - a.budget;
           if (sort === "creators") return b.creators.length - a.creators.length;
-          if (sort === "progress") return b.progress - a.progress;
-          return b.updatedAt.localeCompare(a.updatedAt);
+          if (sort === "progress") return (b.progress || 0) - (a.progress || 0);
+          return (
+            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          );
         }),
     [campaigns, query, status, platform, budget, dueSoon, sort],
   );
@@ -93,7 +126,12 @@ export default function CampaignFilters({
       ? [{ label: `Search: ${query}`, clear: () => setQuery("") }]
       : []),
     ...(status !== "all"
-      ? [{ label: statusLabels[status], clear: () => setStatus("all") }]
+      ? [
+          {
+            label: statusLabels[status as CampaignStatus] || status,
+            clear: () => setStatus("all"),
+          },
+        ]
       : []),
     ...(platform !== "all"
       ? [{ label: platform, clear: () => setPlatform("all") }]
@@ -117,7 +155,16 @@ export default function CampaignFilters({
         className="flex gap-1 overflow-x-auto rounded-xl border border-[#e5ddcf] bg-white p-1.5"
         aria-label="Filter by status"
       >
-        {(["all", ...statuses] as const).map((item) => (
+        <button
+          type="button"
+          aria-pressed={status === "all"}
+          onClick={() => setStatus("all")}
+          className={`shrink-0 rounded-lg px-3 py-2 text-sm font-semibold ${status === "all" ? "bg-[#1b1923] text-white" : "text-[#746d63] hover:bg-[#f5f1e9]"}`}
+        >
+          All <span className="ml-1.5 opacity-70">{campaigns.length}</span>
+        </button>
+
+        {PRISMA_STATUSES.map((item) => (
           <button
             key={item}
             type="button"
@@ -125,11 +172,9 @@ export default function CampaignFilters({
             onClick={() => setStatus(item)}
             className={`shrink-0 rounded-lg px-3 py-2 text-sm font-semibold ${status === item ? "bg-[#1b1923] text-white" : "text-[#746d63] hover:bg-[#f5f1e9]"}`}
           >
-            {item === "all" ? "All" : statusLabels[item]}{" "}
+            {statusLabels[item]}{" "}
             <span className="ml-1.5 opacity-70">
-              {item === "all"
-                ? campaigns.length
-                : campaigns.filter((c) => c.status === item).length}
+              {campaigns.filter((c) => c.status === item).length}
             </span>
           </button>
         ))}
@@ -146,7 +191,7 @@ export default function CampaignFilters({
         <select
           aria-label="Platform"
           value={platform}
-          onChange={(e) => setPlatform(e.target.value as Platform | "all")}
+          onChange={(e) => setPlatform(e.target.value)}
           className={control}
         >
           <option value="all">All platforms</option>
