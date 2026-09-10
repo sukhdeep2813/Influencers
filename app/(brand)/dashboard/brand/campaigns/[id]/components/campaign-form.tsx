@@ -1,32 +1,64 @@
 "use client";
 
+import { createCampaignAction } from "../../../campaigns/actions"; // Adjust path if needed
+import { useTransition } from "react";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
+import { Prisma } from "../../../../../../../generated/prisma";
+
 import {
   CAMPAIGNS_PATH,
   button,
   control,
   panel,
   platforms,
-  type Campaign,
-  type Platform,
-} from "../../data/campaign-data";
+} from "../../components/campaign-utils";
 import CampaignDetails from "./campaign-details";
 
-export default function CampaignForm({ source }: { source?: Campaign }) {
+// Match the Prisma payload so the `source` and `preview` work seamlessly
+type CampaignWithData = Prisma.CampaignGetPayload<{
+  include: {
+    creators: {
+      include: {
+        creator: {
+          include: { user: true };
+        };
+      };
+    };
+  };
+}> & {
+  platforms?: string[];
+  progress?: number;
+  spent?: number;
+};
+
+export default function CampaignForm({
+  source,
+}: {
+  source?: CampaignWithData;
+}) {
   const [title, setTitle] = useState(source ? `${source.title} (copy)` : "");
   const [description, setDescription] = useState(source?.description ?? "");
   const [budget, setBudget] = useState(source ? String(source.budget) : "");
-  const [deadline, setDeadline] = useState("");
-  const [selected, setSelected] = useState<Platform[]>(
+  const [isPending, startTransition] = useTransition();
+
+  // Format the Prisma DateTime source to "YYYY-MM-DD" for the HTML date input
+  const initialDeadline = source?.deadline
+    ? new Date(source.deadline).toISOString().split("T")[0]
+    : "";
+  const [deadline, setDeadline] = useState(initialDeadline);
+
+  const [selected, setSelected] = useState<string[]>(
     source?.platforms ?? ["Instagram"],
   );
-  const [preview, setPreview] = useState<Campaign | null>(null);
+
+  const [preview, setPreview] = useState<CampaignWithData | null>(null);
   const [error, setError] = useState("");
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const amount = Number(budget);
+
     if (
       !title.trim() ||
       !description.trim() ||
@@ -40,24 +72,27 @@ export default function CampaignForm({ source }: { source?: Campaign }) {
       );
       return;
     }
+
     setError("");
-    setPreview({
-      id: 0,
+
+    // Construct a mock Prisma object to feed into the CampaignDetails preview
+    const previewData: Partial<CampaignWithData> = {
+      id: "preview-id",
       title: title.trim(),
       description: description.trim(),
-      icon: "◇",
-      status: "draft",
+      status: "DRAFT", // Mapped to uppercase Prisma Enum
       platforms: selected,
+      deliverables: selected.join(", "),
       budget: amount,
       spent: 0,
-      creators: [],
-      reach: 0,
-      engagement: null,
+      creators: [], // Empty relation array
       progress: 0,
-      deadline,
-      daysLeft: null,
-      updatedAt: new Date().toISOString().slice(0, 10),
-    });
+      deadline: new Date(deadline), // Convert string back to Date object
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    setPreview(previewData as CampaignWithData);
   }
 
   return (
@@ -73,6 +108,7 @@ export default function CampaignForm({ source }: { source?: Campaign }) {
           Build your brief and preview it before saving.
         </p>
       </header>
+
       <form
         onSubmit={submit}
         onChange={() => setPreview(null)}
@@ -89,6 +125,7 @@ export default function CampaignForm({ source }: { source?: Campaign }) {
             placeholder="Winter skin reset"
           />
         </label>
+
         <label className="block text-sm font-medium">
           Campaign brief
           <textarea
@@ -101,6 +138,7 @@ export default function CampaignForm({ source }: { source?: Campaign }) {
             placeholder="Describe your goals and expected content…"
           />
         </label>
+
         <div className="grid gap-5 sm:grid-cols-2">
           <label className="block text-sm font-medium">
             Budget (₹)
@@ -115,6 +153,7 @@ export default function CampaignForm({ source }: { source?: Campaign }) {
               className={`${control} mt-2 w-full`}
             />
           </label>
+
           <label className="block text-sm font-medium">
             Deadline
             <input
@@ -126,6 +165,7 @@ export default function CampaignForm({ source }: { source?: Campaign }) {
             />
           </label>
         </div>
+
         <fieldset>
           <legend className="text-sm font-medium">Platforms</legend>
           <div className="mt-3 flex flex-wrap gap-4">
@@ -148,11 +188,13 @@ export default function CampaignForm({ source }: { source?: Campaign }) {
             ))}
           </div>
         </fieldset>
+
         {error && (
           <p role="alert" className="text-sm text-red-700">
             {error}
           </p>
         )}
+
         <div className="flex flex-wrap justify-end gap-3">
           <Link href={CAMPAIGNS_PATH} className={button}>
             Cancel
@@ -165,6 +207,7 @@ export default function CampaignForm({ source }: { source?: Campaign }) {
           </button>
         </div>
       </form>
+
       {preview && (
         <div className="space-y-3">
           <p
@@ -174,6 +217,28 @@ export default function CampaignForm({ source }: { source?: Campaign }) {
             Draft preview only. This campaign has not been saved.
           </p>
           <CampaignDetails campaign={preview} />
+
+          {/* Placeholder for the actual API submit button */}
+          <div className="flex justify-end">
+            <button
+              type="button"
+              disabled={isPending}
+              onClick={() => {
+                startTransition(async () => {
+                  await createCampaignAction({
+                    title,
+                    description,
+                    budget: Number(budget),
+                    deadline,
+                    platforms: selected,
+                  });
+                });
+              }}
+              className="rounded-xl bg-[#1b1923] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#302d3a] disabled:opacity-70"
+            >
+              {isPending ? "Saving..." : "Save Campaign to Database"}
+            </button>
+          </div>
         </div>
       )}
     </div>
