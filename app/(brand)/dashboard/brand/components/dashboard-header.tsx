@@ -17,7 +17,7 @@ const navItems = [
   },
   {
     label: "Find Creators",
-    href: "/dashboard/brand/search",
+    href: "/dashboard/brand/creators",
   },
   {
     label: "Applications",

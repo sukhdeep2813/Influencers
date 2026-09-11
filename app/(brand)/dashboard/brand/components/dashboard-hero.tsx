@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type DashboardHeroProps = {
   brandName: string;
   activeCampaigns: number;
@@ -58,8 +60,8 @@ export default function DashboardHero({
 
         {/* Right CTA */}
         <div className="flex w-full shrink-0 flex-col gap-3 sm:w-auto sm:flex-row lg:flex-col lg:items-end">
-          <a
-            href="#recommended-creators"
+          <Link
+            href="/dashboard/brand/creators"
             className="
               inline-flex min-h-11 w-full
               items-center justify-center gap-2
@@ -78,7 +80,7 @@ export default function DashboardHero({
           >
             <span className="text-lg leading-none text-orange-400">+</span>
             Find & recruit creators
-          </a>
+          </Link>
 
           <p className="hidden text-right text-[11px] text-slate-400 sm:block">
             Build your next campaign
