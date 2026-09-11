@@ -10,18 +10,21 @@ export const compact = (value: number) =>
     notation: "compact",
     maximumFractionDigits: 1,
   }).format(value);
+
 export const money = (value: number) =>
   new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
     maximumFractionDigits: 0,
   }).format(value);
+
 export const initials = (name: string) =>
   name
     .split(" ")
     .map((part) => part[0])
     .slice(0, 2)
     .join("");
+
 export const toggleItem = <T>(items: T[], value: T): T[] =>
   items.includes(value)
     ? items.filter((item) => item !== value)
@@ -53,15 +56,24 @@ export function filterCreators(
   savedIds: string[] = [],
 ): Creator[] {
   if (filterError(filters)) return [];
-  const within = (value: number, low: string, high: string) =>
-    (low === "" || value >= Number(low)) &&
-    (high === "" || value <= Number(high));
+
+  // Updated to safely handle nullable numbers from Prisma by defaulting to 0
+  const within = (value: number | null, low: string, high: string) => {
+    const val = value ?? 0;
+    return (
+      (low === "" || val >= Number(low)) && (high === "" || val <= Number(high))
+    );
+  };
+
   const query = filters.query.trim().toLowerCase();
-  const results = creators.filter(
-    (creator) =>
-      `${creator.name} ${creator.handle} ${creator.niche} ${creator.bio} ${creator.creatorTypes.join(" ")}`
-        .toLowerCase()
-        .includes(query) &&
+
+  const results = creators.filter((creator) => {
+    // Safely concatenate strings, falling back to empty strings if Prisma returns null
+    const searchableText =
+      `${creator.name} ${creator.handle || ""} ${creator.niche || ""} ${creator.bio || ""} ${creator.creatorTypes.join(" ")}`.toLowerCase();
+
+    return (
+      searchableText.includes(query) &&
       (filters.city === "all" || creator.city === filters.city) &&
       (filters.niche === "all" || creator.niche === filters.niche) &&
       (!filters.platforms.length ||
@@ -72,22 +84,29 @@ export function filterCreators(
       (filters.audience === "all" || creator.audience === filters.audience) &&
       (!filters.ageGroups.length ||
         filters.ageGroups.some((age) => creator.ageGroups.includes(age))) &&
-      creator.avgViews >= filters.minViews &&
+      (creator.avgViews ?? 0) >= filters.minViews &&
       (!filters.creatorTypes.length ||
         filters.creatorTypes.some((type) =>
           creator.creatorTypes.includes(type),
         )) &&
       (!filters.verifiedOnly || creator.verified) &&
-      (!filters.availableOnly || creator.available) &&
-      (!filters.hasReviews || creator.reviewCount > 0) &&
-      (!filters.savedOnly || savedIds.includes(creator.id)),
-  );
+      // Check Prisma relation array for availability status
+      (!filters.availableOnly ||
+        (creator.availability &&
+          creator.availability.some((a) => a.status === "AVAILABLE"))) &&
+      // Check Prisma relation array length for reviews
+      (!filters.hasReviews ||
+        (creator.reviews && creator.reviews.length > 0)) &&
+      (!filters.savedOnly || savedIds.includes(creator.id))
+    );
+  });
+
   return results.sort((a, b) => {
     const difference =
       sort === "engagement"
         ? b.engagement - a.engagement
         : sort === "followers"
-          ? b.followers - a.followers
+          ? (b.followers ?? 0) - (a.followers ?? 0)
           : sort === "price-low"
             ? a.price - b.price
             : b.matchScore - a.matchScore;
