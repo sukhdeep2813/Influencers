@@ -10,26 +10,38 @@ export default function CompareDialog({
   onClose: () => void;
 }) {
   const rows: [string, (creator: Creator) => string][] = [
-    ["Location", (c) => c.city],
-    ["Niche", (c) => c.niche],
-    ["Platforms", (c) => c.platforms.join(", ")],
-    ["Followers", (c) => compact(c.followers)],
+    ["Location", (c) => c.city || "—"],
+    ["Niche", (c) => c.niche || "—"],
+    ["Platforms", (c) => c.platforms?.join(", ") || "—"],
+    ["Followers", (c) => compact(c.followers ?? 0)],
     ["Engagement", (c) => `${c.engagement}%`],
     ["Per post", (c) => money(c.price)],
-    ["Avg. views", (c) => compact(c.avgViews)],
+    ["Avg. views", (c) => compact(c.avgViews ?? 0)],
     ["Audience", (c) => c.audience],
-    ["Audience ages", (c) => c.ageGroups.join(", ")],
-    ["Creator type", (c) => c.creatorTypes.join(", ")],
+    ["Audience ages", (c) => c.ageGroups?.join(", ") || "—"],
+    ["Creator type", (c) => c.creatorTypes?.join(", ") || "—"],
     ["Verified", (c) => (c.verified ? "Yes" : "No")],
-    ["Available", (c) => (c.available ? "Yes" : "No")],
+    [
+      "Available",
+      (c) =>
+        c.availability?.some((a) => a.status === "AVAILABLE") ? "Yes" : "No",
+    ],
     [
       "Brand reviews",
-      (c) =>
-        c.reviewCount
-          ? `${c.rating ?? "—"}/5 · ${c.reviewCount} reviews`
-          : "No reviews",
+      (c) => {
+        const count = c.reviews?.length ?? 0;
+        if (count === 0) return "No reviews";
+
+        // Calculate the dynamic average rating from the Prisma relation
+        const avgRating = (
+          c.reviews.reduce((sum, r) => sum + r.rating, 0) / count
+        ).toFixed(1);
+
+        return `${avgRating}/5 · ${count} review${count !== 1 ? "s" : ""}`;
+      },
     ],
   ];
+
   return (
     <Dialog title="Compare creators" onClose={onClose}>
       <div className="overflow-x-auto rounded-xl border border-[#e2dbc8] bg-white">

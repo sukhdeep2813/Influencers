@@ -13,6 +13,7 @@ export default function CompareBar({
   onCompare: () => void;
 }) {
   if (!creators.length) return null;
+
   return (
     <div className="fixed inset-x-3 bottom-3 z-30 mx-auto max-w-5xl rounded-2xl bg-[#15141f] p-4 text-white shadow-xl sm:inset-x-6 sm:bottom-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -28,7 +29,7 @@ export default function CompareBar({
                 type="button"
                 aria-label={`Remove ${creator.name} from comparison`}
                 onClick={() => onRemove(creator.id)}
-                className="rounded-full bg-white/10 px-2 py-1 text-xs hover:bg-white/20"
+                className="cursor-pointer rounded-full bg-white/10 px-2 py-1 text-xs hover:bg-white/20"
               >
                 {creator.name} ×
               </button>
@@ -36,11 +37,14 @@ export default function CompareBar({
           </div>
         </div>
         <div className="flex gap-2">
-          <Button onClick={onClear}>Clear</Button>
+          <Button onClick={onClear} className="cursor-pointer">
+            Clear
+          </Button>
           <Button
             tone="primary"
             disabled={creators.length < 2}
             onClick={onCompare}
+            className="cursor-pointer"
           >
             Compare now →
           </Button>

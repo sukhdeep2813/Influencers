@@ -30,9 +30,13 @@ export default function ContactDialog({
       return;
     }
     setError("");
+
+    // Safely format the handle only if it exists in the database
+    const handleText = creator.handle ? ` (${creator.handle})` : "";
+
     const file = new Blob(
       [
-        `To: ${creator.name} (${creator.handle})\nSubject: ${subject.trim()}\n\n${message.trim()}`,
+        `To: ${creator.name}${handleText}\nSubject: ${subject.trim()}\n\n${message.trim()}`,
       ],
       { type: "text/plain;charset=utf-8" },
     );
@@ -90,8 +94,10 @@ export default function ContactDialog({
           </p>
         )}
         <div className="flex justify-end gap-2">
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit" tone="primary">
+          <Button onClick={onClose} className="cursor-pointer">
+            Cancel
+          </Button>
+          <Button type="submit" tone="primary" className="cursor-pointer">
             Download draft
           </Button>
         </div>
@@ -111,6 +117,7 @@ export function Dialog({
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
+
   useEffect(() => {
     const dialog = ref.current;
     if (dialog && !dialog.open) dialog.showModal();
@@ -140,7 +147,12 @@ export function Dialog({
           <h2 id={titleId} className="text-xl font-semibold">
             {title}
           </h2>
-          <Button autoFocus onClick={onClose} aria-label="Close dialog">
+          <Button
+            autoFocus
+            onClick={onClose}
+            aria-label="Close dialog"
+            className="cursor-pointer"
+          >
             ×
           </Button>
         </div>
