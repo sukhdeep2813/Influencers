@@ -24,6 +24,12 @@ export default function CreatorCard({
   onContact,
 }: Props) {
   const list = view === "list";
+
+  // Calculate dynamic data from Prisma relations
+  const isAvailable =
+    c.availability?.some((a) => a.status === "AVAILABLE") ?? false;
+  const reviewCount = c.reviews?.length ?? 0;
+
   return (
     <article
       className={`overflow-hidden rounded-2xl border border-[#e2dbc8] bg-white shadow-[0_2px_14px_rgba(21,20,31,.04)] transition hover:border-[#cbb99d] ${list ? "lg:flex lg:items-center" : ""}`}
@@ -34,7 +40,7 @@ export default function CreatorCard({
         <label className="absolute left-3 top-3 flex cursor-pointer items-center gap-1.5 rounded-lg bg-white/95 px-2 py-1.5 text-xs">
           <input
             type="checkbox"
-            className="size-4 accent-[#15141f]"
+            className="size-4 accent-[#15141f] cursor-pointer"
             checked={compared}
             disabled={!compared && compareDisabled}
             onChange={onCompare}
@@ -47,7 +53,7 @@ export default function CreatorCard({
           aria-label={`${saved ? "Unsave" : "Save"} ${c.name}`}
           aria-pressed={saved}
           onClick={onSave}
-          className={`absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-white/95 text-xl ${saved ? "text-[#a7412c]" : "text-[#6b6558]"}`}
+          className={`absolute right-3 top-3 grid size-9 cursor-pointer place-items-center rounded-full bg-white/95 text-xl ${saved ? "text-[#a7412c]" : "text-[#6b6558]"}`}
         >
           {saved ? "♥" : "♡"}
         </button>
@@ -58,6 +64,7 @@ export default function CreatorCard({
           {initials(c.name)}
         </span>
       </div>
+
       <div className={`min-w-0 flex-1 p-5 pt-9 ${list ? "lg:pt-5" : ""}`}>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-lg font-semibold tracking-tight">{c.name}</h2>
@@ -67,22 +74,30 @@ export default function CreatorCard({
             </span>
           )}
         </div>
+
+        {/* Safely handle null handles and cities */}
         <p className="mt-1 break-words text-sm text-[#6b6558]">
-          {c.handle} · {c.city}
+          {c.handle || "No handle"} {c.city ? `· ${c.city}` : ""}
         </p>
+
         <div className="my-3 flex flex-wrap gap-1.5">
-          {[c.niche, ...c.platforms, ...c.creatorTypes].map((tag) => (
-            <span
-              key={tag}
-              className="rounded-md bg-[#f3efe4] px-2 py-1 text-xs text-[#6b6558]"
-            >
-              {tag}
-            </span>
-          ))}
+          {/* Filter out null values before rendering tags */}
+          {[c.niche, ...c.platforms, ...c.creatorTypes]
+            .filter(Boolean)
+            .map((tag) => (
+              <span
+                key={tag}
+                className="rounded-md bg-[#f3efe4] px-2 py-1 text-xs text-[#6b6558]"
+              >
+                {tag}
+              </span>
+            ))}
         </div>
+
         <dl className="grid grid-cols-3 gap-2 border-y border-[#e2dbc8] py-3 text-center">
           {[
-            ["Followers", compact(c.followers)],
+            // Safely fall back to 0 if followers is null in the database
+            ["Followers", compact(c.followers ?? 0)],
             ["Engagement", `${c.engagement}%`],
             ["Per post", money(c.price)],
           ].map(([label, value]) => (
@@ -92,17 +107,27 @@ export default function CreatorCard({
             </div>
           ))}
         </dl>
+
         <p className="my-3 text-xs text-[#6b6558]">
-          {c.available ? "Available this month" : "Currently unavailable"} ·{" "}
-          {c.reviewCount > 0
-            ? `${c.reviewCount} brand reviews`
+          {isAvailable ? "Available this month" : "Currently unavailable"} ·{" "}
+          {reviewCount > 0
+            ? `${reviewCount} brand review${reviewCount !== 1 ? "s" : ""}`
             : "No brand reviews yet"}
         </p>
+
         <div className="flex gap-2">
-          <Button className="flex-1" onClick={onSave} aria-pressed={saved}>
+          <Button
+            className="flex-1 cursor-pointer"
+            onClick={onSave}
+            aria-pressed={saved}
+          >
             {saved ? "Saved ♥" : "Save"}
           </Button>
-          <Button className="flex-1" tone="primary" onClick={onContact}>
+          <Button
+            className="flex-1 cursor-pointer"
+            tone="primary"
+            onClick={onContact}
+          >
             Contact
           </Button>
         </div>

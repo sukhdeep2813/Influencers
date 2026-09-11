@@ -30,9 +30,12 @@ export default function CreatorResults({
         <p className="my-3 text-sm text-[#6b6558]">
           Try a broader search or remove a filter.
         </p>
-        <Button onClick={onReset}>Clear filters</Button>
+        <Button onClick={onReset} className="cursor-pointer">
+          Clear filters
+        </Button>
       </div>
     );
+
   return (
     <div
       className={
