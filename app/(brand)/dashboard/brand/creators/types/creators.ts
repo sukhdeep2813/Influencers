@@ -1,3 +1,8 @@
+import { Prisma } from "../../../../../../generated/prisma";
+
+// ------------------------------------------------------
+// 1. STATIC UI ENUMS
+// ------------------------------------------------------
 export type Platform = "Instagram" | "YouTube" | "TikTok";
 export type Audience = "Male" | "Female" | "Mixed";
 export type AgeGroup = "13–17" | "18–24" | "25–34" | "35+";
@@ -7,31 +12,42 @@ export type CreatorType =
   | "Event creator"
   | "Family creator"
   | "Luxury creator";
+
 export type SortKey = "match" | "engagement" | "followers" | "price-low";
 export type ViewMode = "grid" | "list";
 
-export interface Creator {
-  id: string;
-  name: string;
-  handle: string;
-  city: string;
-  niche: string;
+// ------------------------------------------------------
+// 2. PRISMA PAYLOAD GENERATION
+// ------------------------------------------------------
+// We tell Prisma to include the reviews and availability so we can calculate
+// dynamic stats (like rating, reviewCount, and available status) later.
+export type CreatorProfileWithRelations = Prisma.CreatorProfileGetPayload<{
+  include: {
+    reviews: true;
+    availability: true;
+    user: true;
+  };
+}>;
+
+// ------------------------------------------------------
+// 3. THE HYBRID CREATOR TYPE
+// ------------------------------------------------------
+// This combines your real database schema with the mock fields your UI needs.
+// As you add these missing fields to your Prisma schema in the future,
+// you can just delete them from this list!
+export type Creator = CreatorProfileWithRelations & {
   platforms: Platform[];
   creatorTypes: CreatorType[];
-  followers: number;
-  engagement: number;
   price: number;
-  avgViews: number;
+  engagement: number;
   audience: Audience;
   ageGroups: AgeGroup[];
-  verified: boolean;
-  available: boolean;
-  reviewCount: number;
-  rating: number | null;
   matchScore: number;
-  bio: string;
-}
+};
 
+// ------------------------------------------------------
+// 4. FILTER STATE TYPES (Unchanged)
+// ------------------------------------------------------
 export interface CreatorFilters {
   query: string;
   city: string;
