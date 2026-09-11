@@ -46,7 +46,7 @@ export default function ResultsToolbar({
               type="button"
               aria-label="Clear search"
               onClick={() => onQuery("")}
-              className="absolute right-2 top-1.5 size-8 rounded-lg hover:bg-[#f3efe4]"
+              className="absolute right-2 top-1.5 size-8 cursor-pointer rounded-lg hover:bg-[#f3efe4]"
             >
               ×
             </button>
@@ -54,7 +54,7 @@ export default function ResultsToolbar({
         </div>
         <select
           aria-label="Sort creators"
-          className={`${inputClass} sm:max-w-52`}
+          className={`${inputClass} cursor-pointer sm:max-w-52`}
           value={sort}
           onChange={(e) => onSort(e.target.value as SortKey)}
         >
@@ -85,8 +85,9 @@ export default function ResultsToolbar({
 
 export const inputClass =
   "w-full min-w-0 rounded-xl border border-[#e2dbc8] bg-white px-3 py-2.5 text-sm text-[#1c1b1f] outline-none focus:border-[#b4782f] focus:ring-2 focus:ring-[#e7912b]/20";
+
 export const buttonClass =
-  "inline-flex items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b4782f] disabled:cursor-not-allowed disabled:opacity-40";
+  "inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b4782f] disabled:cursor-not-allowed disabled:opacity-40";
 
 export function Button({
   className = "",
