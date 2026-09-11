@@ -25,7 +25,12 @@ export default function FilterSidebar({
   onReset,
 }: Props) {
   const chip = (selected: boolean) =>
-    `rounded-full border px-3 py-2 text-sm transition ${selected ? "border-[#15141f] bg-[#15141f] text-white" : "border-[#e2dbc8] bg-white text-[#6b6558] hover:bg-[#f3efe4]"}`;
+    `cursor-pointer rounded-full border px-3 py-2 text-sm transition ${
+      selected
+        ? "border-[#15141f] bg-[#15141f] text-white"
+        : "border-[#e2dbc8] bg-white text-[#6b6558] hover:bg-[#f3efe4]"
+    }`;
+
   return (
     <aside
       className="space-y-5 rounded-2xl border border-[#e2dbc8] bg-white p-5"
@@ -36,7 +41,7 @@ export default function FilterSidebar({
         <button
           type="button"
           onClick={onReset}
-          className="text-sm font-medium text-[#9b412d] underline-offset-4 hover:underline"
+          className="cursor-pointer text-sm font-medium text-[#9b412d] underline-offset-4 hover:underline"
         >
           Clear all
         </button>
@@ -44,10 +49,11 @@ export default function FilterSidebar({
       <p className="text-xs text-[#6b6558]">
         Results update as you change filters.
       </p>
+
       <FilterGroup title="Location">
         <select
           aria-label="Location"
-          className={inputClass}
+          className={`${inputClass} cursor-pointer`}
           value={f.city}
           onChange={(e) => onChange({ city: e.target.value })}
         >
@@ -57,6 +63,7 @@ export default function FilterSidebar({
           ))}
         </select>
       </FilterGroup>
+
       <FilterGroup title="Platform">
         <div className="flex flex-wrap gap-2">
           {platforms.map((platform) => (
@@ -74,10 +81,11 @@ export default function FilterSidebar({
           ))}
         </div>
       </FilterGroup>
+
       <FilterGroup title="Industry / niche">
         <select
           aria-label="Industry or niche"
-          className={inputClass}
+          className={`${inputClass} cursor-pointer`}
           value={f.niche}
           onChange={(e) => onChange({ niche: e.target.value })}
         >
@@ -87,6 +95,7 @@ export default function FilterSidebar({
           ))}
         </select>
       </FilterGroup>
+
       <FilterGroup title="Followers">
         <div className="grid grid-cols-2 gap-2">
           <label className="text-xs text-[#6b6558]">
@@ -115,12 +124,13 @@ export default function FilterSidebar({
           </label>
         </div>
       </FilterGroup>
+
       <FilterGroup title="Minimum engagement">
         <label className="block text-sm text-[#6b6558]">
           {f.minEngagement.toFixed(1)}%
           <input
             aria-label="Minimum engagement rate"
-            className="mt-3 w-full accent-[#e7912b]"
+            className="mt-3 w-full cursor-pointer accent-[#e7912b]"
             type="range"
             min="0"
             max="10"
@@ -132,6 +142,7 @@ export default function FilterSidebar({
           />
         </label>
       </FilterGroup>
+
       <FilterGroup title="Budget per post (₹)">
         <div className="grid grid-cols-2 gap-2">
           <label className="text-xs text-[#6b6558]">
@@ -160,11 +171,12 @@ export default function FilterSidebar({
           </label>
         </div>
       </FilterGroup>
+
       <FilterGroup title="Audience gender">
         <select
           aria-label="Audience gender"
           value={f.audience}
-          className={inputClass}
+          className={`${inputClass} cursor-pointer`}
           onChange={(e) =>
             onChange({ audience: e.target.value as CreatorFilters["audience"] })
           }
@@ -175,6 +187,7 @@ export default function FilterSidebar({
           ))}
         </select>
       </FilterGroup>
+
       <FilterGroup title="Audience age">
         <div className="flex flex-wrap gap-2">
           {ageGroups.map((age) => (
@@ -192,12 +205,13 @@ export default function FilterSidebar({
           ))}
         </div>
       </FilterGroup>
+
       <FilterGroup title="Average reel / short views">
         <select
           aria-label="Minimum average views"
           value={f.minViews}
           onChange={(e) => onChange({ minViews: Number(e.target.value) })}
-          className={inputClass}
+          className={`${inputClass} cursor-pointer`}
         >
           {[
             [0, "Any"],
@@ -212,6 +226,7 @@ export default function FilterSidebar({
           ))}
         </select>
       </FilterGroup>
+
       <FilterGroup title="Creator type">
         <div className="flex flex-wrap gap-2">
           {creatorTypes.map((type) => (
@@ -229,6 +244,7 @@ export default function FilterSidebar({
           ))}
         </div>
       </FilterGroup>
+
       <div className="space-y-3">
         {(
           [
@@ -238,10 +254,13 @@ export default function FilterSidebar({
             ["savedOnly", "Saved creators only"],
           ] as const
         ).map(([key, label]) => (
-          <label key={key} className="flex items-center gap-2 text-sm">
+          <label
+            key={key}
+            className="flex cursor-pointer items-center gap-2 text-sm"
+          >
             <input
               type="checkbox"
-              className="size-4 accent-[#1f8073]"
+              className="size-4 cursor-pointer accent-[#1f8073]"
               checked={f[key]}
               onChange={(e) => onChange({ [key]: e.target.checked })}
             />
@@ -249,7 +268,8 @@ export default function FilterSidebar({
           </label>
         ))}
       </div>
-      <Button className="w-full" onClick={onReset}>
+
+      <Button className="w-full cursor-pointer" onClick={onReset}>
         Reset filters
       </Button>
     </aside>
